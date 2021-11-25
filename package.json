@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "@grpc/grpc-js": "^1.4.4",
+    "async": "^3.2.2"
+  },
+  "name": "zk-mock-prover",
+  "description": "Emulate the real zk-prover interface and functionality",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hermeznetwork/zk-mock-prover.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hermeznetwork/zk-mock-prover/issues"
+  },
+  "homepage": "https://github.com/hermeznetwork/zk-mock-prover#readme"
+}

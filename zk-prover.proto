@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package zkprover;
+
+service ZKProver {
+    rpc GetStatus(NoParams) returns (State) {}
+    rpc GenProof(stream L2Txs) returns (stream Proof) {}
+    rpc Cancel(NoParams) returns (State) {}
+    rpc GetProof(NoParams) returns (Proof) {}
+}
+
+message NoParams {}
+
+message State {
+    enum Status {
+        IDLE = 0;
+        ERROR = 1;
+        PENDING = 2;
+        FINISHED = 3;
+    }
+    Status status = 1;
+    Proof proof = 2;
+}
+
+
+message ResetServer {
+    string resetServer = 1;
+}
+
+message ProofX {
+    repeated string proof = 1;
+}
+
+message PublicInputs {
+    string currentStateRoot = 1;
+    string currentLocalExitRoot = 2;
+    string newStateRoot = 3;
+    string newLocalExitRoot = 4;
+    string sequencerAddress = 5;
+    string l2Txs = 6;
+    string chainId = 7;
+}
+
+message Proof {
+    repeated string proofA = 1;
+    repeated ProofX proofB = 2;
+    repeated string  proofC = 3;
+    PublicInputs publicInputs = 4;
+}
+
+message L2Txs {
+    string message = 1;
+    string l2Txs = 2;
+}
