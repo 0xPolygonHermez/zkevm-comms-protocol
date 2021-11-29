@@ -1,7 +1,9 @@
 {
   "dependencies": {
     "@grpc/grpc-js": "^1.4.4",
-    "async": "^3.2.2"
+    "async": "^3.2.2",
+    "ethers": "^5.5.1",
+    "pg": "^8.7.1"
   },
   "name": "zk-mock-prover",
   "description": "Emulate the real zk-prover interface and functionality",

@@ -40,7 +40,7 @@ function runGenProof(callback) {
     call.end();
   });
   call.on('end', callback);
-  const l2Txs = { l2Txs: "l2Txs", message: "calculate" };
+  const l2Txs = { l2Txs: "0x222222", message: "calculate" };
   call.write(l2Txs);
 }
 
@@ -54,11 +54,14 @@ function cancel(call, callback) {
  * Run all of the demos in order
  */
 function main() {
+  // async.series([
+  //   getStatus,
+  //   getProof,
+  //   runGenProof,
+  //   cancel
+  // ]);
   async.series([
-    getStatus,
-    getProof,
-    runGenProof,
-    cancel
+    runGenProof
   ]);
 }
 

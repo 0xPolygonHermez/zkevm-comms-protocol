@@ -1,5 +1,7 @@
 var PROTO_PATH = __dirname + '/zk-prover.proto';
 
+const ethers = require("ethers");
+const SqlDb = require("./sql-db");
 var grpc = require('@grpc/grpc-js');
 var protoLoader = require('@grpc/proto-loader');
 var packageDefinition = protoLoader.loadSync(
@@ -31,10 +33,18 @@ let timeoutProof;
 if (process.argv[2] == undefined) timeoutProof = 5000;
 else timeoutProof = Number(process.argv[2]);
 
+const configSql = {
+  user: "user",
+  host: "host",
+  database: "database",
+  password: "password",
+  port: "port",
+}
+
 const testProof = {
-  proofA: ["1", "2"],
-  proofB: [{ proof: ["3", "4"] }, { proof: ["5", "6"] }],
-  proofC: ["7", "8"],
+  proofA: ["0", "0"],
+  proofB: [{ proof: ["0", "0"] }, { proof: ["0", "0"] }],
+  proofC: ["0", "0"],
   publicInputs: {
     currentStateRoot: "0x1234",
     currentLocalExitRoot: "0x1234",
@@ -60,10 +70,36 @@ function getProof(call, callback) {
     callback(null, undefined)
 }
 
-async function calculateProof(l2Txs) {
+async function getInfoDB(sql) {
+  //   **Buffer bytes notation**
+  // [ 256 bits ] currentStateRoot
+  // [ 256 bits ] currentLocalExitRoot
+  // [ 256 bits ] newStateRoot
+  // [ 256 bits ] newLocalExitRoot
+  // [ 160 bits ] sequencerAddress
+  // [ 256 bits ] keccak256(l2TxsData # lastGlobalExitRoot)
+  // [ 16 bits  ] chainID (sequencerID)
+  const publicInputs = {
+    currentStateRoot: await sql.getRoot(),
+    currentLocalExitRoot: await sql.getRoot(),
+    newStateRoot: await sql.getRoot(),
+    newLocalExitRoot: await sql.getRoot(),
+    sequencerAddress: "0x1111111111111111111111111111111111111111",
+    l2TxsDataLastGlobalExitRoot: await sql.getRoot(),
+    chainId: "0x1",
+  }
+  return publicInputs;
+}
+
+async function calculateProof(l2Txs, sql) {
   currentState = state.PENDING;
   const numLoops = timeoutProof / 1000;
   const loopTimeout = timeoutProof / numLoops;
+  const publicInputs = await getInfoDB(sql);
+  console.log(l2Txs.l2Txs)
+  console.log(publicInputs.l2TxsDataLastGlobalExitRoot)
+  publicInputs.l2TxsDataLastGlobalExitRoot = ethers.utils.solidityKeccak256(['bytes', 'bytes32'], [l2Txs.l2Txs, publicInputs.l2TxsDataLastGlobalExitRoot]);
+  console.log(publicInputs);
   for (let i = 0; i < numLoops; i++) {
     if (!isCancel) await timeout(loopTimeout);
     else break;
@@ -76,17 +112,22 @@ async function calculateProof(l2Txs) {
   return testProof;
 }
 
-function genProof(call) {
+async function genProof(call) {
+  const sql = new SqlDb(/*configSql*/);
+  //await sql.connect();
   call.on('data', async function (l2Txs) {
     if (l2Txs.message == "cancel") {
       if (currentState == state.PENDING) isCancel = true;
       currentState = state.IDLE;
     } else {
-      const proof = await calculateProof(l2Txs);
+      const proof = await calculateProof(l2Txs, sql);
       call.write(proof);
     }
   });
-  call.on('end', function () {
+  call.on('end', async function () {
+    if (typeof sql !== "undefined") {
+      //await sql.disconnect();
+    }
     call.end();
   });
 }
