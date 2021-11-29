@@ -37,7 +37,7 @@ message PublicInputs {
     string newStateRoot = 3;
     string newLocalExitRoot = 4;
     string sequencerAddress = 5;
-    string l2Txs = 6;
+    string l2TxsDataLastGlobalExitRoot = 6;
     string chainId = 7;
 }
 

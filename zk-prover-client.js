@@ -1,5 +1,5 @@
 
-var PROTO_PATH = __dirname + '/zk-prover.proto';
+var PROTO_PATH = __dirname + '/proto/zk-prover.proto';
 
 var async = require('async');
 var grpc = require('@grpc/grpc-js');

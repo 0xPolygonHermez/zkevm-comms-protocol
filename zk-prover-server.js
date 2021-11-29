@@ -1,4 +1,4 @@
-var PROTO_PATH = __dirname + '/zk-prover.proto';
+var PROTO_PATH = __dirname + '/proto/zk-prover.proto';
 
 const ethers = require("ethers");
 const SqlDb = require("./sql-db");
@@ -96,8 +96,6 @@ async function calculateProof(l2Txs, sql) {
   const numLoops = timeoutProof / 1000;
   const loopTimeout = timeoutProof / numLoops;
   const publicInputs = await getInfoDB(sql);
-  console.log(l2Txs.l2Txs)
-  console.log(publicInputs.l2TxsDataLastGlobalExitRoot)
   publicInputs.l2TxsDataLastGlobalExitRoot = ethers.utils.solidityKeccak256(['bytes', 'bytes32'], [l2Txs.l2Txs, publicInputs.l2TxsDataLastGlobalExitRoot]);
   console.log(publicInputs);
   for (let i = 0; i < numLoops; i++) {
