@@ -4,7 +4,7 @@ package zkprover;
 
 service ZKProver {
     rpc GetStatus(NoParams) returns (State) {}
-    rpc GenProof(stream L2Txs) returns (stream Proof) {}
+    rpc GenProof(stream Batch) returns (stream Proof) {}
     rpc Cancel(NoParams) returns (State) {}
     rpc GetProof(NoParams) returns (Proof) {}
 }
@@ -22,23 +22,18 @@ message State {
     Proof proof = 2;
 }
 
-
-message ResetServer {
-    string resetServer = 1;
-}
-
 message ProofX {
     repeated string proof = 1;
 }
 
 message PublicInputs {
-    string currentStateRoot = 1;
-    string currentLocalExitRoot = 2;
-    string newStateRoot = 3;
-    string newLocalExitRoot = 4;
+    bytes currentStateRoot = 1;
+    bytes currentLocalExitRoot = 2;
+    bytes newStateRoot = 3;
+    bytes newLocalExitRoot = 4;
     string sequencerAddress = 5;
-    string l2TxsDataLastGlobalExitRoot = 6;
-    string chainId = 7;
+    bytes l2TxsDataLastGlobalExitRoot = 6;
+    uint64 chainId = 7;
 }
 
 message Proof {
@@ -48,7 +43,12 @@ message Proof {
     PublicInputs publicInputs = 4;
 }
 
-message L2Txs {
+message Batch {
     string message = 1;
-    string l2Txs = 2;
+    bytes currentStateRoot = 2;
+    bytes newStateRoot = 3;
+    bytes l2Txs = 4;
+    bytes lastGlobalExitRoot = 5;
+    string sequencerAddress = 6;
+    uint64 chainId = 7;
 }

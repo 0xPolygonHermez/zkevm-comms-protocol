@@ -2,10 +2,11 @@
 Emulate the real zk-prover interface and functionality
 
 ## Files
-- `zk-prover.proto` --> This file defines the `ZKProver` service
+- `proto/zk-prover.proto` --> This file defines the `ZKProver` service
 - `zk-prover-server.js` --> This file defines the server
 - `zk-prover-client.js` (example) --> This file is an example of a client
-- `sql-db.js` --> This file defines the interaction with DB
+- `src/sql-db.js` --> This file defines the interaction with DB
+- `src/helpers.js` --> Helpers
 
 ## Server definition
 
@@ -44,9 +45,14 @@ Function to generate the proofs.
 
 The client must provide the following information to the server when calling the function:
 ```
-message L2Txs {
+message Batch {
     string message = 1;
-    string l2Txs = 2;
+    bytes currentStateRoot = 2;
+    bytes newStateRoot = 3;
+    bytes l2Txs = 4;
+    bytes lastGlobalExitRoot = 5;
+    string sequencerAddress = 6;
+    uint64 chainId = 7;
 }
 ```
 
@@ -67,13 +73,13 @@ message Proof {
 Where:
 ```
 message PublicInputs {
-    string currentStateRoot = 1;
-    string currentLocalExitRoot = 2;
-    string newStateRoot = 3;
-    string newLocalExitRoot = 4;
+    bytes currentStateRoot = 1;
+    bytes currentLocalExitRoot = 2;
+    bytes newStateRoot = 3;
+    bytes newLocalExitRoot = 4;
     string sequencerAddress = 5;
-    string l2TxsLastGlobalExitRoot = 6;
-    string chainId = 7;
+    bytes l2TxsDataLastGlobalExitRoot = 6;
+    uint64 chainId = 7;
 }
 
 message ProofX {
@@ -81,7 +87,7 @@ message ProofX {
 }
 ```
 
-This channel will be open until the client decides to close it. In this way, the client can continue requesting proofs by sending the message `L2Txs`.
+This channel will be open until the client decides to close it. In this way, the client can continue requesting proofs by sending the message `Batch`.
 
 ### Cancel
 If the previous channel is closed and the server has calculated a test, the client can cancel it with this call.

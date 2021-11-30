@@ -1,72 +1,70 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-console */
+const PROTO_PATH = `${__dirname}/proto/zk-prover.proto`;
 
-var PROTO_PATH = __dirname + '/proto/zk-prover.proto';
+const async = require('async');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
 
-var async = require('async');
-var grpc = require('@grpc/grpc-js');
-var protoLoader = require('@grpc/proto-loader');
-var packageDefinition = protoLoader.loadSync(
-  PROTO_PATH,
-  {
-    keepCase: true,
-    longs: String,
-    enums: String,
-    defaults: true,
-    oneofs: true
-  });
-var zkProverProto = grpc.loadPackageDefinition(packageDefinition).zkprover;
+const packageDefinition = protoLoader.loadSync(
+    PROTO_PATH,
+    {
+        keepCase: true,
+        longs: String,
+        enums: String,
+        defaults: true,
+        oneofs: true,
+    },
+);
+const zkProverProto = grpc.loadPackageDefinition(packageDefinition).zkprover;
 const target = 'localhost:50051';
-var client = new zkProverProto.ZKProver(target,
-  grpc.credentials.createInsecure());
+const client = new zkProverProto.ZKProver(
+    target,
+    grpc.credentials.createInsecure(),
+);
 
 function getStatus(call, callback) {
-  client.getStatus(null, function (err, response) {
-    console.log("Status:", response.status);
-    if (response.status == "FINISHED")
-      console.log("Proof:", response.proof);
-  });
+    client.getStatus(null, (err, response) => {
+        console.log(response);
+        console.log('Status:', response.status);
+        if (response.status === 'FINISHED') {
+            console.log('Proof:', response.proof);
+        }
+    });
 }
 
 function getProof(call, callback) {
-  client.getProof(null, function (err, response) {
-    console.log("Proof:", response);
-  });
+    client.getProof(null, (err, response) => {
+        console.log('Proof:', response);
+    });
 }
 
 function runGenProof(callback) {
-  var call = client.genProof();
-  call.on('data', function (proof) {
-    console.log("CLIENT");
-    console.log(proof);
-    call.end();
-  });
-  call.on('end', callback);
-  const l2Txs = { l2Txs: "0x222222", message: "calculate" };
-  call.write(l2Txs);
+    console.log(client);
+    const call = client.genProof();
+    call.on('data', (proof) => {
+        console.log('CLIENT');
+        console.log(proof);
+        call.end();
+    });
+    call.on('end', callback);
+    const l2Txs = {
+        l2Txs: '0x222222',
+        message: 'calculate',
+        currentStateRoot: '0x1234123412341234123412341234123412341234123412341234123412341234',
+        newStateRoot: '0x1212121212121212121212121212121212121212121212121212121212121212',
+        lastGlobalExitRoot: '0x1234123412341234123412341234123412341234123412341234123412341234',
+        sequencerAddress: '0x1111111111222222222233333333334444444444',
+        chainId: '0x1',
+    };
+    call.write(l2Txs);
 }
 
 function cancel(call, callback) {
-  client.cancel(null, function (err, response) {
-    console.log("Status:", response.status);
-  });
-}
-
-/**
- * Run all of the demos in order
- */
-function main() {
-  // async.series([
-  //   getStatus,
-  //   getProof,
-  //   runGenProof,
-  //   cancel
-  // ]);
-  async.series([
-    runGenProof
-  ]);
-}
-
-if (require.main === module) {
-  main();
+    console.log(client);
+    client.cancel(null, (err, response) => {
+        console.log('Status:', response.status);
+    });
 }
 
 exports.getStatus = getStatus;
