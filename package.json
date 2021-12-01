@@ -4,6 +4,7 @@
     "@grpc/proto-loader": "^0.6.7",
     "async": "^3.2.2",
     "chai": "^4.3.4",
+    "dotenv": "^10.0.0",
     "eslint": "^8.3.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-mocha": "^9.0.0",

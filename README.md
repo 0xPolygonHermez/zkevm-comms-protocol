@@ -8,12 +8,33 @@ Emulate the real zk-prover interface and functionality
 - `src/sql-db.js` --> This file defines the interaction with DB
 - `src/helpers.js` --> Helpers
 
+## Run server prover
+
+The command to run the prover is the following:
+```
+node zk-prover-server.js ${timeProof}
+```
+
+- `timeProof`: the time it will take for the prover to return the proof (Default: `5000 ms`)
+
+### .env
+
+A `.env` file is required. It must contain the following variables:
+```
+POSTGRES_USER='user'
+POSTGRES_HOST='host'
+POSTGRES_DB='database'
+POSTGRES_PASSWORD='password'
+POSTGRES_PORT='port'
+```
+This information is required to connect to database.
+
 ## Server definition
 
 The file begins by defining the functions of the service:
 ```
 rpc GetStatus(NoParams) returns (State) {}
-rpc GenProof(stream L2Txs) returns (stream Proof) {}
+rpc GenProof(stream Batch) returns (stream Proof) {}
 rpc Cancel(NoParams) returns (State) {}
 rpc GetProof(NoParams) returns (Proof) {}
 ```
@@ -90,7 +111,7 @@ message ProofX {
 This channel will be open until the client decides to close it. In this way, the client can continue requesting proofs by sending the message `Batch`.
 
 ### Cancel
-If the previous channel is closed and the server has calculated a test, the client can cancel it with this call.
+If the previous channel is closed and the server has computed a proof, the client can cancel it with this call.
 
 The client does not need to enter data to make this call.
 The prover returns the status to confirm that the proof calculation is canceled.

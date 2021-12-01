@@ -10,6 +10,7 @@ class SqlDb {
    */
     constructor(config) {
         this.config = config;
+        // TODO: uncomment the following lines to declare the client
 
         // this.client = new Client({
         //   user: this.config.user,
@@ -52,6 +53,7 @@ class SqlDb {
    */
     async getMerkleTree() {
         return '0x1234123412341234123412341234123412341234123412341234123412341234';
+        // TODO: add the necessary query to get the information from the DB
         // this._checkConnected();
         // const query = `
         //   SELECT *

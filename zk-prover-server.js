@@ -33,13 +33,14 @@ let timeoutProof;
 if (process.argv[2] === undefined) timeoutProof = 5000;
 else timeoutProof = Number(process.argv[2]);
 
+require('dotenv').config();
 // eslint-disable-next-line no-unused-vars
 const configSql = {
-    user: 'user',
-    host: 'host',
-    database: 'database',
-    password: 'password',
-    port: 'port',
+    user: process.env.POSTGRES_USER,
+    host: process.env.POSTGRES_HOST,
+    database: process.env.POSTGRES_DB,
+    password: process.env.POSTGRES_PASSWORD,
+    port: process.env.POSTGRES_PORT,
 };
 
 const testProof = {
@@ -145,7 +146,7 @@ function cancel(call, callback) {
 }
 
 /**
- * Starts an RPC server that receives requests for the Greeter service at the
+ * Starts an RPC server that receives requests for the ZKProver service at the
  * sample server port
  */
 function main() {
