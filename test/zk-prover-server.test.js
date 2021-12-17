@@ -15,7 +15,7 @@ describe('Server prover', function () {
 
     before(async () => {
         const SERVER_PATH = path.join(__dirname, '../zk-prover-server.js');
-        processExec = spawn('node', [SERVER_PATH, 5000]);
+        processExec = spawn('node', [SERVER_PATH]);
         await timeout(1000);
         const PROTO_PATH = path.join(__dirname, '../proto/zk-prover.proto');
 

@@ -1,5 +1,6 @@
 const PROTO_PATH = `${__dirname}/proto/zk-prover.proto`;
 
+const winston = require('winston');
 const ethers = require('ethers');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
@@ -18,6 +19,23 @@ const packageDefinition = protoLoader.loadSync(
 );
 const zkProverProto = grpc.loadPackageDefinition(packageDefinition).zkprover;
 
+// configure logger
+const options = {
+    console: {
+        level: 'verbose',
+        format: winston.format.combine(
+            winston.format.colorize(),
+            winston.format.simple(),
+        ),
+    },
+};
+
+const logger = winston.createLogger({
+    transports: [
+        new winston.transports.Console(options.console),
+    ],
+});
+
 // Enum proof states
 const state = {
     IDLE: 0,
@@ -29,10 +47,6 @@ let currentState = state.IDLE;
 let currentBatch = {};
 let isCancel = false;
 
-let timeoutProof;
-if (process.argv[2] === undefined) timeoutProof = 5000;
-else timeoutProof = Number(process.argv[2]);
-
 require('dotenv').config();
 // eslint-disable-next-line no-unused-vars
 const configSql = {
@@ -42,6 +56,10 @@ const configSql = {
     password: process.env.POSTGRES_PASSWORD,
     port: process.env.POSTGRES_PORT,
 };
+
+let timeoutProof;
+if (process.env.PROOF_TIME === undefined) timeoutProof = 5000;
+else timeoutProof = Number(process.env.PROOF_TIME);
 
 const testProof = {
     proofA: ['0', '0'],
@@ -73,6 +91,7 @@ function getPublicInputs(batch) {
 }
 
 function getStatus(call, callback) {
+    logger.info('Get status');
     if (currentState === state.FINISHED) {
         callback(null, { status: currentState, proof: testProof });
     } else if (currentState === state.PENDING) {
@@ -84,6 +103,7 @@ function getStatus(call, callback) {
 }
 
 function getProof(call, callback) {
+    logger.info('Get proof');
     if (currentState === state.FINISHED) { callback(null, testProof); } else { callback(null, undefined); }
 }
 
@@ -116,6 +136,7 @@ async function calculateProof(batch, sql) {
 }
 
 async function genProof(call) {
+    logger.info('Generate proof');
     const sql = new SqlDb(/* configSql */);
     // await sql.connect();
     call.on('data', async (batch) => {
@@ -141,6 +162,7 @@ async function genProof(call) {
 function cancel(call, callback) {
     if (currentState === state.PENDING) isCancel = true;
     currentState = state.IDLE;
+    logger.info('Cancel proof');
     currentBatch = {};
     callback(null, { status: currentState });
 }
@@ -158,6 +180,7 @@ function main() {
         cancel,
     });
     server.bindAsync('0.0.0.0:50051', grpc.ServerCredentials.createInsecure(), () => {
+        logger.info('zk-mock-prover running on port 50051');
         server.start();
     });
 }
