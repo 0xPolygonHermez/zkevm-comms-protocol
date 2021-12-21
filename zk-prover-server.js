@@ -1,11 +1,14 @@
 const PROTO_PATH = `${__dirname}/proto/zk-prover.proto`;
 
 const winston = require('winston');
-const ethers = require('ethers');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
+const ethers = require('ethers');
+
 const SqlDb = require('./src/sql-db');
 const { timeout } = require('./src/helpers');
+const { getHashTableFromSql } = require('./src/utils-sql');
+const utilsContracts = require('./src/contract-utils');
 
 const packageDefinition = protoLoader.loadSync(
     PROTO_PATH,
@@ -43,9 +46,13 @@ const state = {
     PENDING: 2,
     FINISHED: 3,
 };
+
+const ARITY = 4;
+
 let currentState = state.IDLE;
-let currentBatch = {};
+let currentInputProver = {};
 let isCancel = false;
+let iSql;
 
 require('dotenv').config();
 // eslint-disable-next-line no-unused-vars
@@ -65,28 +72,24 @@ const testProof = {
     proofA: ['0', '0'],
     proofB: [{ proof: ['0', '0'] }, { proof: ['0', '0'] }],
     proofC: ['0', '0'],
-    publicInputs: {
+    publicInputsExtended: {
     },
 };
 
-function getPublicInputs(batch) {
-    //   **Buffer bytes notation**
-    // [ 256 bits ] currentStateRoot
-    // [ 256 bits ] currentLocalExitRoot
-    // [ 256 bits ] newStateRoot
-    // [ 256 bits ] newLocalExitRoot
-    // [ 160 bits ] sequencerAddress
-    // [ 256 bits ] keccak256(l2TxsData # lastGlobalExitRoot)
-    // [ 16 bits  ] chainID (sequencerID)
-    const publicInputs = {
-        currentStateRoot: batch.currentStateRoot,
-        currentLocalExitRoot: Buffer.from('0x', 'hex'),
-        newStateRoot: batch.newStateRoot,
-        newLocalExitRoot: Buffer.from('0x', 'hex'),
-        sequencerAddress: batch.sequencerAddress,
-        l2TxsDataLastGlobalExitRoot: Buffer.from(ethers.utils.solidityKeccak256(['bytes', 'bytes32'], [batch.l2Txs, batch.lastGlobalExitRoot]).slice(2), 'hex'),
-        chainId: batch.chainId,
-    };
+function getPublicInputs(inputProver) {
+    const { publicInputs, txs, globalExitRoot } = inputProver;
+    const batchL2Data = ethers.utils.RLP.encode(txs);
+    const batcHashData = utilsContracts.calculateBatchHashData(batchL2Data, globalExitRoot);
+    publicInputs.inputHash = utilsContracts.calculateCircuitInput(
+        publicInputs.oldStateRoot,
+        publicInputs.oldLocalExitRoot,
+        publicInputs.newStateRoot,
+        publicInputs.newLocalExitRoot,
+        publicInputs.sequencerAddr,
+        batcHashData,
+        publicInputs.chainId,
+        publicInputs.batchNum,
+    );
     return publicInputs;
 }
 
@@ -95,31 +98,37 @@ function getStatus(call, callback) {
     if (currentState === state.FINISHED) {
         callback(null, { status: currentState, proof: testProof });
     } else if (currentState === state.PENDING) {
-        const proof = {
-            publicInputs: getPublicInputs(currentBatch),
-        };
+        const publicInputs = getPublicInputs(currentInputProver);
+        const proof = {};
+        proof.publicInputsExtended = {};
+        proof.publicInputsExtended.publicInputs = publicInputs;
+        proof.publicInputsExtended.inputHash = publicInputs.inputHash;
         callback(null, { status: currentState, proof });
     } else { callback(null, { status: currentState }); }
 }
 
 function getProof(call, callback) {
     logger.info('Get proof');
-    if (currentState === state.FINISHED) { callback(null, testProof); } else { callback(null, undefined); }
+    if (currentState === state.FINISHED) {
+        callback(null, testProof);
+    } else {
+        callback(null, undefined);
+    }
 }
 
-function getInfoDB(batch, sql) {
-    const publicInputs = getPublicInputs(batch);
+async function getInfoDB(inputProver) {
+    const publicInputs = getPublicInputs(inputProver);
     // eslint-disable-next-line no-unused-vars
-    const merkleTree = sql.getMerkleTree();
-    return publicInputs;
+    const hashTable = await getHashTableFromSql(iSql, publicInputs.oldStateRoot, ARITY);
+    return { publicInputs, hashTable };
 }
 
-async function calculateProof(batch, sql) {
+async function calculateProof(inputProver) {
     currentState = state.PENDING;
-    currentBatch = batch;
+    currentInputProver = inputProver;
     const numLoops = timeoutProof / 1000;
     const loopTimeout = timeoutProof / numLoops;
-    const publicInputs = getInfoDB(batch, sql);
+    const { publicInputs, hashTable } = await getInfoDB(inputProver, iSql);
     for (let i = 0; i < numLoops; i++) {
         // eslint-disable-next-line no-await-in-loop
         if (!isCancel) await timeout(loopTimeout);
@@ -131,30 +140,27 @@ async function calculateProof(batch, sql) {
         isCancel = false;
     }
     await timeout(timeoutProof);
-    testProof.publicInputs = publicInputs;
+    testProof.publicInputsExtended.publicInputs = publicInputs;
+    testProof.publicInputsExtended.inputHash = publicInputs.inputHash;
     return testProof;
 }
 
 async function genProof(call) {
     logger.info('Generate proof');
-    const sql = new SqlDb(/* configSql */);
-    // await sql.connect();
-    call.on('data', async (batch) => {
-        if (batch.message === 'cancel') {
+
+    call.on('data', async (inputProver) => {
+        if (inputProver.message === 'cancel') {
             if (currentState === state.PENDING) isCancel = true;
             currentState = state.IDLE;
-            currentBatch = {};
+            currentInputProver = {};
         } else if (currentState === state.PENDING) {
             throw new Error('Pending proof');
         } else {
-            const proof = await calculateProof(batch, sql);
+            const proof = await calculateProof(inputProver, iSql);
             call.write(proof);
         }
     });
     call.on('end', async () => {
-        if (typeof sql !== 'undefined') {
-            // await sql.disconnect();
-        }
         call.end();
     });
 }
@@ -163,7 +169,7 @@ function cancel(call, callback) {
     if (currentState === state.PENDING) isCancel = true;
     currentState = state.IDLE;
     logger.info('Cancel proof');
-    currentBatch = {};
+    currentInputProver = {};
     callback(null, { status: currentState });
 }
 
@@ -179,9 +185,12 @@ function main() {
         genProof,
         cancel,
     });
-    server.bindAsync('0.0.0.0:50051', grpc.ServerCredentials.createInsecure(), () => {
-        logger.info('zk-mock-prover running on port 50051');
+    server.bindAsync('0.0.0.0:50051', grpc.ServerCredentials.createInsecure(), async () => {
+        iSql = new SqlDb(configSql);
+        await iSql.connect();
         server.start();
+        logger.info(`Connect ${configSql.database} DB on ${configSql.host}:${configSql.port}`);
+        logger.info('zk-mock-prover running on port 50051\n');
     });
 }
 
