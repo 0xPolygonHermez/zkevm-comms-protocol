@@ -20,7 +20,7 @@ POSTGRES_PASSWORD='password'
 POSTGRES_PORT='port'
 PROOF_TIME=5000
 ```
-This information is required to connect to database and setup the the time to compute the proof
+This information is required to connect to database and setup the time to compute the proof
 
 ### Run service
 > commands are run from repository root
@@ -50,5 +50,26 @@ npm run build:docker
 
 - In order to run the image
 ```
-docker run -p 50085:50085 zk-mock-prover:latest
+docker run --rm --name zk-mock-prover -p 50085:50085 -d zk-mock-prover:latest
+```
+
+## Tests
+- In order to create a postgresDb to run the test:
+```
+git clone git@github.com:hermeznetwork/hermez-core.git
+cd hermez-core
+make start-db
+go test ./state --run TestStateTransition
+```
+- Table fields:
+```
+CREATE TABLE state.merkletree
+(
+  hash BYTEA PRIMARY KEY,
+  data BYTEA NOT NULL
+);
+```
+- Run tests:
+```
+npm run test
 ```

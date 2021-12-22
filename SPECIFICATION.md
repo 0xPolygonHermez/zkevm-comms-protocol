@@ -5,7 +5,7 @@
 ## Service functionalities
 ```
 rpc GetStatus(NoParams) returns (State) {}
-rpc GenProof(stream Batch) returns (stream Proof) {}
+rpc GenProof(stream InputProver) returns (stream Proof) {}
 rpc Cancel(NoParams) returns (State) {}
 rpc GetProof(NoParams) returns (Proof) {}
 ```
@@ -35,14 +35,25 @@ Function to generate the proofs.
 
 The client must provide the following information to the server when calling the function:
 ```
-message Batch {
+message InputProver {
     string message = 1;
-    bytes currentStateRoot = 2;
-    bytes newStateRoot = 3;
-    bytes l2Txs = 4;
-    bytes lastGlobalExitRoot = 5;
-    string sequencerAddress = 6;
-    uint64 chainId = 7;
+    PublicInputs publicInputs = 2;
+    string globalExitRoot = 3;
+    repeated string txs = 4;
+    map<string, string> keys = 5;
+}
+```
+where:
+```
+message PublicInputs {
+    string oldStateRoot = 1;
+    string oldLocalExitRoot = 2;
+    string newStateRoot = 3;
+    string newLocalExitRoot = 4;
+    string sequencerAddr = 5;
+    string batchHashData = 6;
+    uint32 chainId = 7;
+    uint32 batchNum = 8;
 }
 ```
 
@@ -56,20 +67,15 @@ message Proof {
     repeated string proofA = 1;
     repeated ProofX proofB = 2;
     repeated string  proofC = 3;
-    PublicInputs publicInputs = 4;
+    PublicInputsExtended publicInputsExtended = 4;
 }
 ```
 
-Where:
+where:
 ```
-message PublicInputs {
-    bytes currentStateRoot = 1;
-    bytes currentLocalExitRoot = 2;
-    bytes newStateRoot = 3;
-    bytes newLocalExitRoot = 4;
-    string sequencerAddress = 5;
-    bytes l2TxsDataLastGlobalExitRoot = 6;
-    uint64 chainId = 7;
+message PublicInputsExtended {
+    PublicInputs publicInputs = 2;
+    string inputHash = 5;
 }
 
 message ProofX {
@@ -77,7 +83,7 @@ message ProofX {
 }
 ```
 
-This channel will be open until the client decides to close it. In this way, the client can continue requesting proofs by sending the message `Batch`.
+This channel will be open until the client decides to close it. In this way, the client can continue requesting proofs by sending the message `InputProver`.
 
 ### Cancel
 If the previous channel is closed and the server has computed a proof, the client can cancel it with this call.
