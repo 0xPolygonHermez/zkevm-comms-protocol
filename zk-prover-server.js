@@ -129,6 +129,7 @@ async function calculateProof(inputProver) {
     const numLoops = timeoutProof / 1000;
     const loopTimeout = timeoutProof / numLoops;
     const { publicInputs, hashTable } = await getInfoDB(inputProver, iSql);
+
     for (let i = 0; i < numLoops; i++) {
         // eslint-disable-next-line no-await-in-loop
         if (!isCancel) await timeout(loopTimeout);
@@ -154,9 +155,9 @@ async function genProof(call) {
             currentState = state.IDLE;
             currentInputProver = {};
         } else if (currentState === state.PENDING) {
-            throw new Error('Pending proof');
+            logger.info('Proof is being generated...');
         } else {
-            const proof = await calculateProof(inputProver, iSql);
+            const proof = await calculateProof(inputProver);
             call.write(proof);
         }
     });
