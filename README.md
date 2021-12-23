@@ -48,9 +48,9 @@ cp .env.example .env
 npm run build:docker
 ```
 
-- In order to run the image
+- In order to run the image with custom environment files
 ```
-docker run --rm --name zk-mock-prover -p 50085:50085 -d zk-mock-prover:latest
+docker run --rm --name zk-mock-prover -p 50085:50085 -e POSTGRES_USER="user" -e POSTGRES_HOST="localhost" -e POSTGRES_DB="database" -e POSTGRES_PASSWORD="password" -e POSTGRES_PORT="port" -e PROOF_TIME=5000 -d hermeznetwork/zk-mock-prover:latest
 ```
 
 ## Tests
