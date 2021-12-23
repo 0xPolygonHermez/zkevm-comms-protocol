@@ -128,6 +128,7 @@ async function calculateProof(inputProver) {
     currentInputProver = inputProver;
     const numLoops = timeoutProof / 1000;
     const loopTimeout = timeoutProof / numLoops;
+    // eslint-disable-next-line no-unused-vars
     const { publicInputs, hashTable } = await getInfoDB(inputProver, iSql);
 
     for (let i = 0; i < numLoops; i++) {

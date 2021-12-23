@@ -53,13 +53,37 @@ npm run build:docker
 docker run --rm --name zk-mock-prover -p 50085:50085 -e POSTGRES_USER="user" -e POSTGRES_HOST="localhost" -e POSTGRES_DB="database" -e POSTGRES_PASSWORD="password" -e POSTGRES_PORT="port" -e PROOF_TIME=5000 -d hermeznetwork/zk-mock-prover:latest
 ```
 
+## Run zk-mock-client
+
+### configuration
+A `.env` file is required. It must contain the following variables:
+```
+INPUT_TIME=10000
+```
+
+Is required previously:
+- `postgresDb` (more detailed in the Tests section)
+- Run `zk-mock-prover`
+
+### Run client
+
+```
+node zk-prover-client.js {command}
+```
+
+Where {command}:
+- `status`: return status
+- `genproof`: return one proof
+- `genproofs`: return one proof every {INPUT_TIME} ms
+- `cancel`: cancel the proof that is being generated
+
 ## Tests
 - In order to create a postgresDb to run the test:
 ```
 git clone git@github.com:hermeznetwork/hermez-core.git
 cd hermez-core
 make start-db
-go test ./state --run TestStateTransition
+go test ./state --run TestStateTransition -count=1
 ```
 - Table fields:
 ```
@@ -72,4 +96,12 @@ CREATE TABLE state.merkletree
 - Run tests:
 ```
 npm run test
+```
+- The enviroment file:
+```
+POSTGRES_USER='test_user'
+POSTGRES_HOST='host'
+POSTGRES_DB='database'
+POSTGRES_PASSWORD='test_password'
+POSTGRES_PORT='port'
 ```

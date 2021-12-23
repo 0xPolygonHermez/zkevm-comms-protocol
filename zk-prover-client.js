@@ -2,9 +2,9 @@
 /* eslint-disable no-console */
 const PROTO_PATH = `${__dirname}/proto/zk-prover.proto`;
 
-const async = require('async');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
+const expectedInput = require('./test/test-vectors/input_2.json');
 
 const packageDefinition = protoLoader.loadSync(
     PROTO_PATH,
@@ -23,6 +23,10 @@ const client = new zkProverProto.ZKProver(
     grpc.credentials.createInsecure(),
 );
 
+// delete "db" property from it will be get from sql
+const inputProver = { ...expectedInput };
+delete inputProver.db;
+
 function getStatus(call, callback) {
     client.getStatus(null, (err, response) => {
         console.log(response);
@@ -39,35 +43,68 @@ function getProof(call, callback) {
     });
 }
 
-function runGenProof(callback) {
-    console.log(client);
+function runGenOneProof(callback) {
     const call = client.genProof();
     call.on('data', (proof) => {
-        console.log('CLIENT');
         console.log(proof);
         call.end();
     });
     call.on('end', callback);
-    const l2Txs = {
-        l2Txs: '0x222222',
-        message: 'calculate',
-        currentStateRoot: '0x1234123412341234123412341234123412341234123412341234123412341234',
-        newStateRoot: '0x1212121212121212121212121212121212121212121212121212121212121212',
-        lastGlobalExitRoot: '0x1234123412341234123412341234123412341234123412341234123412341234',
-        sequencerAddress: '0x1111111111222222222233333333334444444444',
-        chainId: '0x1',
-    };
-    call.write(l2Txs);
+    const inputProverCalculate = {};
+    inputProverCalculate.txs = inputProver.txs;
+    inputProverCalculate.globalExitRoot = inputProver.globalExitRoot;
+    inputProverCalculate.keys = inputProver.keys;
+    inputProverCalculate.publicInputs = { ...inputProver };
+    inputProverCalculate.message = 'calculate';
+    call.write(inputProverCalculate);
+}
+
+function runGenProofs(callback) {
+    const call = client.genProof();
+    call.on('data', (proof) => {
+        console.log(proof);
+    });
+    call.on('end', callback);
+    const inputProverCalculate = {};
+    inputProverCalculate.txs = inputProver.txs;
+    inputProverCalculate.globalExitRoot = inputProver.globalExitRoot;
+    inputProverCalculate.keys = inputProver.keys;
+    inputProverCalculate.publicInputs = { ...inputProver };
+    inputProverCalculate.message = 'calculate';
+    call.write(inputProverCalculate);
+    setInterval(() => {
+        call.write(inputProverCalculate);
+    }, 10000);
 }
 
 function cancel(call, callback) {
-    console.log(client);
     client.cancel(null, (err, response) => {
         console.log('Status:', response.status);
     });
 }
+function mockNode() {
+    const command = process.argv[2];
+    if (command === 'genproofs') {
+        runGenProofs((err, result) => {
+        });
+    } else if (command === 'genproof') {
+        runGenOneProof((err, result) => {
+        });
+    } else if (command === 'status') {
+        getStatus((err, result) => {
+        });
+    } else if (command === 'cancel') {
+        cancel((err, result) => {
+        });
+    } else {
+        console.log('Command error');
+    }
+}
+
+mockNode();
 
 exports.getStatus = getStatus;
 exports.getProof = getProof;
-exports.runGenProof = runGenProof;
+exports.runGenOneProof = runGenOneProof;
+exports.runGenProofs = runGenProofs;
 exports.cancel = cancel;
