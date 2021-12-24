@@ -73,8 +73,8 @@ node zk-prover-client.js {command}
 
 Where {command}:
 - `status`: return status
-- `genproof`: return one proof
-- `genproofs`: return one proof every {INPUT_TIME} ms
+- `genproof`: generate one proof
+- `genproofs`: generate multiple proofs every {INPUT_TIME} ms
 - `cancel`: cancel the proof that is being generated
 
 ## Tests

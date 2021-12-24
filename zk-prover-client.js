@@ -4,6 +4,8 @@ const PROTO_PATH = `${__dirname}/proto/zk-prover.proto`;
 
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
+
+require('dotenv').config();
 const expectedInput = require('./test/test-vectors/input_2.json');
 
 const packageDefinition = protoLoader.loadSync(
@@ -23,17 +25,18 @@ const client = new zkProverProto.ZKProver(
     grpc.credentials.createInsecure(),
 );
 
+let timeoutGenProof;
+if (process.env.INPUT_TIME === undefined) timeoutGenProof = 10000;
+else timeoutGenProof = Number(process.env.INPUT_TIME);
+
 // delete "db" property from it will be get from sql
 const inputProver = { ...expectedInput };
 delete inputProver.db;
 
 function getStatus(call, callback) {
     client.getStatus(null, (err, response) => {
-        console.log(response);
         console.log('Status:', response.status);
-        if (response.status === 'FINISHED') {
-            console.log('Proof:', response.proof);
-        }
+        console.log('Proof:', response.proof);
     });
 }
 
@@ -74,7 +77,7 @@ function runGenProofs(callback) {
     call.write(inputProverCalculate);
     setInterval(() => {
         call.write(inputProverCalculate);
-    }, 10000);
+    }, timeoutGenProof);
 }
 
 function cancel(call, callback) {

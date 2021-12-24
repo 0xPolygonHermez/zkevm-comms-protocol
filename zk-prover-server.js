@@ -136,30 +136,35 @@ async function calculateProof(inputProver) {
         if (!isCancel) await timeout(loopTimeout);
         else break;
     }
+
+    let resProof;
+
     if (!isCancel) {
         currentState = state.FINISHED;
+        testProof.publicInputsExtended.publicInputs = publicInputs;
+        testProof.publicInputsExtended.inputHash = publicInputs.inputHash;
+        resProof = testProof;
     } else {
         isCancel = false;
+        resProof = {};
     }
-    await timeout(timeoutProof);
-    testProof.publicInputsExtended.publicInputs = publicInputs;
-    testProof.publicInputsExtended.inputHash = publicInputs.inputHash;
-    return testProof;
+    return resProof;
 }
 
 async function genProof(call) {
-    logger.info('Generate proof');
-
     call.on('data', async (inputProver) => {
         if (inputProver.message === 'cancel') {
+            logger.info('Cancel proof');
             if (currentState === state.PENDING) isCancel = true;
             currentState = state.IDLE;
             currentInputProver = {};
         } else if (currentState === state.PENDING) {
             logger.info('Proof is being generated...');
+            call.write({ status: currentState, proof: {} });
         } else {
+            logger.info('Generate proof');
             const proof = await calculateProof(inputProver);
-            call.write(proof);
+            call.write({ status: currentState, proof });
         }
     });
     call.on('end', async () => {
