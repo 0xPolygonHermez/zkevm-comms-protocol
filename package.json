@@ -22,7 +22,8 @@
     "test": "npx mocha ./test/*.test.js",
     "lint": "npx eslint ./test && npx eslint ./",
     "lintFix": "npx eslint ./test --fix && npx eslint ./ --fix",
-    "build:docker": "docker build -t hermeznetwork/zk-mock-prover -f docker/Dockerfile ."
+    "build:docker": "docker build -t hermeznetwork/zk-mock-prover -f docker/Dockerfile .",
+    "push:docker": "docker push hermeznetwork/zk-mock-prover"
   },
   "repository": {
     "type": "git",
