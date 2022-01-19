@@ -5,6 +5,7 @@ const path = require('path');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const { spawn } = require('child_process');
+const lodash = require('lodash');
 
 const { timeout } = require('../src/helpers');
 const helpers = require('./helpers');
@@ -21,6 +22,14 @@ describe('Server zk-mock-prover', function () {
     let processExec;
     let oldEnvFileStr;
     let inputProver;
+
+    const expectedResProof = {
+        proofA: ['0', '0'],
+        proofB: [{ proof: ['0', '0'] }, { proof: ['0', '0'] }],
+        proofC: ['0', '0'],
+        publicInputsExtended: {
+        },
+    };
 
     before(async () => {
         // setup environment file
@@ -80,15 +89,14 @@ describe('Server zk-mock-prover', function () {
         inputProverCalculate.message = 'calculate';
 
         const call = client.genProof();
-        call.on('data', (proof) => {
+        call.on('data', (res) => {
             // check mock proof
-            expect(proof.proofA.toString()).to.be.equal(['0', '0'].toString());
-            expect(proof.proofB[0].proof.toString()).to.be.equal(['0', '0'].toString());
-            expect(proof.proofB[1].proof.toString()).to.be.equal(['0', '0'].toString());
-            expect(proof.proofC.toString()).to.be.equal(['0', '0'].toString());
+            expect(lodash.isEqual(res.proof.proofA, expectedResProof.proofA)).to.be.equal(true);
+            expect(lodash.isEqual(res.proof.proofB, expectedResProof.proofB)).to.be.equal(true);
+            expect(lodash.isEqual(res.proof.proofC, expectedResProof.proofC)).to.be.equal(true);
 
             // check public inputs
-            const { publicInputs, inputHash } = proof.publicInputsExtended;
+            const { publicInputs, inputHash } = res.proof.publicInputsExtended;
             expect(publicInputs.oldStateRoot).to.be.equal(expectedInput.oldStateRoot);
             expect(publicInputs.oldLocalExitRoot).to.be.equal(expectedInput.oldLocalExitRoot);
             expect(publicInputs.newStateRoot).to.be.equal(expectedInput.newStateRoot);

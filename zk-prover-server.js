@@ -3,7 +3,6 @@ const PROTO_PATH = `${__dirname}/proto/zk-prover.proto`;
 const winston = require('winston');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
-const ethers = require('ethers');
 
 const SqlDb = require('./src/sql-db');
 const { timeout } = require('./src/helpers');
@@ -78,7 +77,7 @@ const testProof = {
 
 function getPublicInputs(inputProver) {
     const { publicInputs, txs, globalExitRoot } = inputProver;
-    const batchL2Data = ethers.utils.RLP.encode(txs);
+    const batchL2Data = txs.reduce((prev, curr) => prev + curr.slice(2), '0x');
     const batcHashData = utilsContracts.calculateBatchHashData(batchL2Data, globalExitRoot);
     publicInputs.inputHash = utilsContracts.calculateCircuitInput(
         publicInputs.oldStateRoot,
