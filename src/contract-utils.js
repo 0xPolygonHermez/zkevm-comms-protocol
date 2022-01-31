@@ -1,5 +1,8 @@
-const ethers = require('ethers');
+const { ethers } = require("ethers");
 const { Scalar } = require('ffjavascript');
+
+// Field Element
+const Fr = Scalar.e("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 
 /**
  * Compute globalHash
@@ -10,7 +13,7 @@ const { Scalar } = require('ffjavascript');
  * @param {String} sequencerAddress - Sequencer address
  * @param {String} batchHashData - Batch hash data
  * @param {Number} batchChainID - Batch chain ID
- * @param {Number} batchNum - Batch number
+ * @param {Number} numBatch - Batch number
  * @returns {String} - Leaf value
  */
 function calculateCircuitInput(
@@ -21,14 +24,14 @@ function calculateCircuitInput(
     sequencerAddress,
     batchHashData,
     batchChainID,
-    batchNum,
+    numBatch,
 ) {
     const currentStateRootHex = `0x${Scalar.e(currentStateRoot).toString(16).padStart(64, '0')}`;
     const currentLocalExitRootHex = `0x${Scalar.e(currentLocalExitRoot).toString(16).padStart(64, '0')}`;
     const newStateRootHex = `0x${Scalar.e(newStateRoot).toString(16).padStart(64, '0')}`;
     const newLocalExitRootHex = `0x${Scalar.e(newLocalExitRoot).toString(16).padStart(64, '0')}`;
 
-    return ethers.utils.solidityKeccak256(
+    const hashKeccak = ethers.utils.solidityKeccak256(
         ['bytes32', 'bytes32', 'bytes32', 'bytes32', 'address', 'bytes32', 'uint32', 'uint32'],
         [
             currentStateRootHex,
@@ -38,9 +41,11 @@ function calculateCircuitInput(
             sequencerAddress,
             batchHashData,
             batchChainID,
-            batchNum,
+            numBatch,
         ],
     );
+
+    return "0x" + Scalar.mod(Scalar.fromString(hashKeccak, 16), Fr).toString(16);
 }
 
 /**

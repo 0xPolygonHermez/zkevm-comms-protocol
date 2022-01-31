@@ -6,10 +6,14 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const { spawn } = require('child_process');
 const lodash = require('lodash');
+const { Scalar } = require('ffjavascript');
 
 const { timeout } = require('../src/helpers');
 const helpers = require('./helpers');
 const expectedInput = require('./test-vectors/input_2.json');
+
+// Field Element
+const Fr = Scalar.e('21888242871839275222246405745257275088548364400416034343698204186575808495617');
 
 describe('Server zk-mock-prover', function () {
     this.timeout(30000);
@@ -105,7 +109,7 @@ describe('Server zk-mock-prover', function () {
             expect(publicInputs.batchHashData).to.be.equal(expectedInput.batchHashData);
             expect(publicInputs.chainId).to.be.equal(expectedInput.chainId);
             expect(publicInputs.batchNum).to.be.equal(expectedInput.batchNum);
-            expect(inputHash).to.be.equal(expectedInput.inputHash);
+            expect(inputHash).to.be.equal(`0x${Scalar.mod(Scalar.fromString(expectedInput.inputHash, 16), Fr).toString(16)}`);
 
             call.end();
             done();
@@ -132,7 +136,7 @@ describe('Server zk-mock-prover', function () {
             expect(publicInputs.batchHashData).to.be.equal(expectedInput.batchHashData);
             expect(publicInputs.chainId).to.be.equal(expectedInput.chainId);
             expect(publicInputs.batchNum).to.be.equal(expectedInput.batchNum);
-            expect(inputHash).to.be.equal(expectedInput.inputHash);
+            expect(inputHash).to.be.equal(`0x${Scalar.mod(Scalar.fromString(expectedInput.inputHash, 16), Fr).toString(16)}`);
             done();
         });
     });
