@@ -1,107 +1,98 @@
-# zk-mock-prover
-Emulate the real zk-prover interface and functionality
+# Protocol definition
+- `proto/zk-prover-proto` contains the service specification
+- Following documentation pretends to explain further its behaviour
 
-## Files
-- `proto/zk-prover.proto` --> This file defines the `ZKProver` service
-- `zk-prover-server.js` --> This file defines the server
-- `zk-prover-client.js` (example) --> This file is an example of a client
-- `src/sql-db.js` --> This file defines the interaction with DB
-- `src/helpers.js` --> Helpers
-
-## Run zk-mock-prover
-
-### configuration
-A `.env` file is required. It must contain the following variables:
+## Service functionalities
 ```
-POSTGRES_USER='user'
-POSTGRES_HOST='host'
-POSTGRES_DB='database'
-POSTGRES_PASSWORD='password'
-POSTGRES_PORT='port'
-PROOF_TIME=5000
-```
-This information is required to connect to database and setup the time to compute the proof
-
-### Run service
-> commands are run from repository root
-- Copy the configuration file and set your configuration
-```
-cp .env.example .env
+rpc GetStatus(NoParams) returns (State) {}
+rpc GenProof(stream InputProver) returns (stream Proof) {}
+rpc Cancel(NoParams) returns (State) {}
+rpc GetProof(NoParams) returns (Proof) {}
 ```
 
-- Command to run the prover from repository
+### GetStatus
+Function to know the status of the prover.
+
+The client does not need to enter data to make this call.
+The status is returned in the following form:
 ```
-npm i
-node zk-prover-server.js
+message State {
+    enum Status {
+        IDLE = 0;
+        ERROR = 1;
+        PENDING = 2;
+        FINISHED = 3;
+    }
+    Status status = 1;
+    Proof proof = 2;
+}
 ```
 
-### Run from docker
-> commands are run from repository root
-- Copy the configuration file and set your configuration
+The status will be one of those defined in the `enum`. Proof is only defined if the status is `FINISHED`.
+
+### GenProof
+Function to generate the proofs.
+
+The client must provide the following information to the server when calling the function:
 ```
-cp .env.example .env
+message InputProver {
+    string message = 1;
+    PublicInputs publicInputs = 2;
+    string globalExitRoot = 3;
+    repeated string txs = 4;
+    map<string, string> keys = 5;
+}
+```
+where:
+```
+message PublicInputs {
+    string oldStateRoot = 1;
+    string oldLocalExitRoot = 2;
+    string newStateRoot = 3;
+    string newLocalExitRoot = 4;
+    string sequencerAddr = 5;
+    string batchHashData = 6;
+    uint32 chainId = 7;
+    uint32 batchNum = 8;
+}
 ```
 
-- Build docker image
-  - the following command will create an image tagged as `zk-mock-prover:latest`
+Where the message can be:
+- `"calculate"`: to generate the proof
+- `"cancel"`: to cancel the last proof
+
+And the server will respond:
 ```
-npm run build:docker
+message Proof {
+    repeated string proofA = 1;
+    repeated ProofX proofB = 2;
+    repeated string  proofC = 3;
+    PublicInputsExtended publicInputsExtended = 4;
+}
 ```
 
-- In order to run the image with custom environment files
+where:
 ```
-docker run --rm --name zk-mock-prover -p 50085:50085 -e POSTGRES_USER="user" -e POSTGRES_HOST="localhost" -e POSTGRES_DB="database" -e POSTGRES_PASSWORD="password" -e POSTGRES_PORT="port" -e PROOF_TIME=5000 -d hermeznetwork/zk-mock-prover:latest
+message PublicInputsExtended {
+    PublicInputs publicInputs = 2;
+    string inputHash = 5;
+}
+
+message ProofX {
+    repeated string proof = 1;
+}
 ```
 
-## Run zk-mock-client
+This channel will be open until the client decides to close it. In this way, the client can continue requesting proofs by sending the message `InputProver`.
 
-### configuration
-A `.env` file is required. It must contain the following variables:
-```
-INPUT_TIME=10000
-```
+### Cancel
+If the previous channel is closed and the server has computed a proof, the client can cancel it with this call.
 
-Is required previously:
-- `postgresDb` (more detailed in the Tests section)
-- Run `zk-mock-prover`
+The client does not need to enter data to make this call.
+The prover returns the status to confirm that the proof calculation is canceled.
 
-### Run client
+### GetProof
+Function to get the last calculated proof.
 
-```
-node zk-prover-client.js {command}
-```
-
-Where {command}:
-- `status`: return status
-- `genproof`: generate one proof
-- `genproofs`: generate multiple proofs every {INPUT_TIME} ms
-- `cancel`: cancel the proof that is being generated
-
-## Tests
-- In order to create a postgresDb to run the test:
-```
-git clone git@github.com:hermeznetwork/hermez-core.git
-cd hermez-core
-make start-db
-go test ./state --run TestStateTransition -count=1
-```
-- Table fields:
-```
-CREATE TABLE state.merkletree
-(
-  hash BYTEA PRIMARY KEY,
-  data BYTEA NOT NULL
-);
-```
-- Run tests:
-```
-npm run test
-```
-- The enviroment file:
-```
-POSTGRES_USER='test_user'
-POSTGRES_HOST='host'
-POSTGRES_DB='database'
-POSTGRES_PASSWORD='test_password'
-POSTGRES_PORT='port'
-```
+The client does not need to enter data to make this call.
+If the status is `FINISHED`, the last proof is returned.
