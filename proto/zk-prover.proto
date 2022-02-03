@@ -3,7 +3,7 @@ syntax = "proto3";
 package zkprover;
 
 message Version {
-    string v0_0_1 = 0;
+    string v0_0_1 = 1;
 }
 
 // timestamps are represented in unix time in seconds
@@ -30,7 +30,7 @@ service ZKProver {
 message NoParams {}
 
 message RequestId {
-    string id = 0;
+    string id = 1;
 }
 
 /*
@@ -43,14 +43,14 @@ message ResGetStatus {
         IDLE = 2;
         HALT = 3;
     }
-    StatusProver state = 0;
-    string last_computed_request_id = 1;
-    uint64 last_computed_end_time = 2;
-    string current_computing_request_id = 3;
-    uint64 current_computing_start_time = 4;
-    string version_proto = 5;
-    string version_server = 6;
-    repeated string pending_request_queue_ids = 7;
+    StatusProver state = 1;
+    string last_computed_request_id = 2;
+    uint64 last_computed_end_time = 3;
+    string current_computing_request_id = 4;
+    uint64 current_computing_start_time = 5;
+    string version_proto = 6;
+    string version_server = 7;
+    repeated string pending_request_queue_ids = 8;
 }
 
 message ResGenProof {
@@ -59,8 +59,8 @@ message ResGenProof {
         ERROR = 1;
         INTERNAL_ERROR = 2;
     }
-    string id = 0;
-    ResultGenProof result = 1;
+    string id = 1;
+    ResultGenProof result = 2;
 }
 
 message ResCancel {
@@ -68,7 +68,7 @@ message ResCancel {
         OK = 0;
         ERROR = 1;
     }
-    ResultCancel result = 0;
+    ResultCancel result = 1;
 }
 
 message ResGetProof {
@@ -80,26 +80,26 @@ message ResGetProof {
         INTERNAL_ERROR = 4;
         CANCEL = 5;
     }
-    string id = 0;
-    Proof proof = 1;
-    PublicInputsExtended public = 2;
-    ResultGetProof result = 3;
-    string result_string = 4;
+    string id = 1;
+    Proof proof = 2;
+    PublicInputsExtended public = 3;
+    ResultGetProof result = 4;
+    string result_string = 5;
 }
 
 message ResExecute {
-    map<string, string> diff_keys_values = 0;
-    string new_state_root = 1;
-    ZkCounters counters = 2;
-    repeated string receipts = 3;
-    repeated string logs = 4;
+    map<string, string> diff_keys_values = 1;
+    string new_state_root = 2;
+    ZkCounters counters = 3;
+    repeated string receipts = 4;
+    repeated string logs = 5;
 }
 
 message ZkCounters {
-    uint32 ecrecover = 0;
-    uint32 hash_poseidon = 1;
-    uint32 hash_keccak = 2;
-    uint32 arith = 3;
+    uint32 ecrecover = 1;
+    uint32 hash_poseidon = 2;
+    uint32 hash_keccak = 3;
+    uint32 arith = 4;
 }
 
 /*
@@ -132,7 +132,7 @@ message InputProver {
     PublicInputs public_inputs = 1;
     string global_exit_root = 2;
     repeated string txs = 3;
-    map<string, string> db = 0;
+    map<string, string> db = 4;
 }
 
 message InputProverExecute {
@@ -142,6 +142,6 @@ message InputProverExecute {
 }
 
 message PublicInputsExtended {
-    PublicInputs public_inputs = 2;
-    string input_hash = 5;
+    PublicInputs public_inputs = 1;
+    string input_hash = 2;
 }
