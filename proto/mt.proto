@@ -4,10 +4,10 @@ package mt;
 
 service MT {
     // Getters
-    rpc GetBalance(EthAddress) returns (Balance);
-    rpc GetNonce(EthAddress) returns (Nonce);
-    rpc GetCode(EthAddress) returns (Code);
-    rpc GetCodeHash(EthAddress) returns (Hash);
+    rpc GetBalance(EthAddressRequest) returns (Balance);
+    rpc GetNonce(EthAddressRequest) returns (Nonce);
+    rpc GetCode(EthAddressRequest) returns (Code);
+    rpc GetCodeHash(EthAddressRequest) returns (Hash);
     rpc GetStorageAt(GetStorageRequest) returns (StorageValue);
     rpc ReverseHash(Hash) returns (MTNode);
     // Setters
@@ -22,37 +22,46 @@ service MT {
     /*
     To be decided:
     - Is this service responsible for writing the MT nodes (SetBalance, SetNonce, ... vs just having SetHashValue)? Both things?
-        * If so, we should add interface that allows updating the root in parallel (commit a bunch of leafs at once) 
+        * If so, we should add interface that allows updating the root in parallel (commit a bunch of leafs at once)
+    - We could use root == "" to indicate latest batch, this could be usefull specially to specify that we want to get the last (nonce, balance, storage)
+    as we could implement a DB that stores last modified value of each leaf
     */
 }
 
 // Requests
-message EthAddress {
+message EthAddressRequest {
     string eth_address = 1;
+    string root = 2;
 }
 message GetStorageRequest {
     string eth_address = 1;
     uint64 position = 2;
+    string root = 3;
 }
 message SetBalanceRequest {
     string eth_address = 1;
     string balance = 2;
+    string root = 3;
 }
 message SetNonceRequest {
     string eth_address = 1;
     uint64 nonce = 2;
+    string root = 3;
 }
 message SetCodeRequest {
     string eth_address = 1;
     string code = 2;
+    string root = 3;
 }
 message SetCodeHashRequest {
     string eth_address = 1;
     string code_hash = 2;
+    string root = 3;
 }
 message SetStorageAtRequest {
     string eth_address = 1;
     string value = 2;
+    string root = 3;
 }
 message SetHashValueRequest {
     string hash = 1;
