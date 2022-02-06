@@ -88,11 +88,19 @@ message ResGetProof {
 }
 
 message ResExecute {
-    map<string, string> diff_keys_values = 1;
-    string new_state_root = 2;
-    ZkCounters counters = 3;
-    repeated string receipts = 4;
-    repeated string logs = 5;
+    enum ResultExecute {
+        COMPLETED_OK = 0;
+        ERROR = 1;
+        COMPLETED_ERR = 2;
+        INTERNAL_ERROR = 3;
+        CANCEL = 4;
+    }
+    ResultExecute result = 1;
+    map<string, string> diff_keys_values = 2;
+    string new_state_root = 3;
+    ZkCounters counters = 4;
+    repeated string receipts = 5;
+    repeated string logs = 6;
 }
 
 message ZkCounters {
