@@ -13,14 +13,14 @@ message Version {
  * GetStatus: non-blocking call
  * GenProof: non-blocking call
  * Cancel: non-blocking call
- * GetProof: non-blocking call
- * Execute: blocking calls
+ * GetProof: blocking call
+ * Execute: blocking call
  */
 service ZKProver {
     rpc GetStatus(NoParams) returns (ResGetStatus) {}
     rpc GenProof(InputProver) returns (ResGenProof) {}
     rpc Cancel(RequestId) returns (ResCancel) {}
-    rpc GetProof(RequestId) returns (ResGetProof) {}
+    rpc GetProof(stream ReqGetProof) returns (stream ResGetProof) {}
     rpc Execute(stream InputProver) returns (stream ResExecute) {}
 }
 
@@ -31,6 +31,11 @@ message NoParams {}
 
 message RequestId {
     string id = 1;
+}
+
+message ReqGetProof {
+    string id = 1;
+    uint64 timeout = 2;
 }
 
 /*
