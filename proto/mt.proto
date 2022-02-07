@@ -14,7 +14,6 @@ service MT {
     rpc SetBalance(SetBalanceRequest) returns (SetResponse);
     rpc SetNonce(SetNonceRequest) returns (SetResponse);
     rpc SetCode(SetCodeRequest) returns (SetResponse);
-    rpc SetCodeHash(SetCodeHashRequest) returns (SetResponse);
     rpc SetStorageAt(SetStorageAtRequest) returns (SetResponse);
     rpc SetHashValue(SetHashValueRequest) returns (SetResponse);
     rpc SetHashValueBulk(SetHashValueBulkRequest) returns (SetResponse);
