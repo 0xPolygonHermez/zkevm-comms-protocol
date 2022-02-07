@@ -144,7 +144,7 @@ message Proof {
 message InputProver {
     PublicInputs public_inputs = 1;
     string global_exit_root = 2;
-    repeated string txs = 3;
+    string batch_l2_data = 3;
     map<string, string> db = 4;
 }
 
