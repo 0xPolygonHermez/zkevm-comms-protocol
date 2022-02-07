@@ -148,12 +148,6 @@ message InputProver {
     map<string, string> db = 4;
 }
 
-message InputProverExecute {
-    PublicInputs public_inputs = 1;
-    string global_exit_root = 2;
-    repeated string txs = 3;
-}
-
 message PublicInputsExtended {
     PublicInputs public_inputs = 1;
     string input_hash = 2;
