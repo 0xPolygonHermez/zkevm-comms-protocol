@@ -15,4 +15,4 @@ jobs:
       - uses: ory/build-buf-action@v0
         with:
           bufVersion: v0.31.1
-          bufArgs: check lint --path proto/mt
+          bufArgs: check lint --path mt
