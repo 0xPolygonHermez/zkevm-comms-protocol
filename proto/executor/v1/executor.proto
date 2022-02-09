@@ -20,21 +20,21 @@ message Receipt {
 	bytes post_state = 2;
 	uint64 status = 3;
 	uint64 cumulative_gas_used = 4;
-    bytes bloom = 5;
+	bytes bloom = 5;
 	repeated Log logs = 6;
 	bytes tx_hash = 7;
 	string contract_address = 8;
 	uint64 gas_used = 9;
 	uint32 transaction_index = 12;
-    string from = 13;
+	string from = 13;
 	string to = 14;
 }
 
 message Log {
-    string address = 1;
+	string address = 1;
 	repeated bytes topics = 2;
 	bytes data = 3;
-    bytes tx_hash = 5;
+	bytes tx_hash = 5;
 	uint32 tx_index = 6;
 	uint32 index = 8;
 	bool removed = 9;
