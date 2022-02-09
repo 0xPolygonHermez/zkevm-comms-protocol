@@ -1,9 +1,13 @@
-# Protocol definition
-- `proto/zkprover/v1/zk_prover.proto` contains the service specification
-- Following documentation pretends to explain further its behaviour
+syntax = "proto3";
 
-## Service functionalities
-```
+package zkprover.v1;
+
+message Version {
+    string v0_0_1 = 1;
+}
+
+// timestamps are represented in unix time in seconds
+
 /**
  * Define all methods implementes by the gRPC
  * GetStatus: get server report about its current state (non-blocking call)
@@ -19,19 +23,54 @@ service ZKProverService {
     rpc GetProof(stream GetProofRequest) returns (stream GetProofResponse) {}
     rpc Execute(stream ExecuteRequest) returns (stream ExecuteResponse) {}
 }
-```
 
-### GetStatus
-#### GetStatusRequest
-```
+///////////////////
+// Request messages
+///////////////////
+
 /**
  * @dev GetStatusRequest
  */
 message GetStatusRequest {}
-```
 
-#### GetStatusResponse
-```
+/**
+ * @dev GenProofRequest
+ * @param {id} - proof identifier
+ */
+message GenProofRequest {
+    string id = 1;
+}
+
+/**
+ * @dev CancelRequest
+ * @param {id} - proof identifier
+ */
+ message CancelRequest {
+    string id = 1;
+}
+
+/**
+ * @dev Request GetProof
+ * @param {id} - proof identifier
+ * @param {timeout} - time to wait until the service responds
+ */
+message GetProofRequest {
+    string id = 1;
+    uint64 timeout = 2;
+}
+
+/**
+ * @dev ExecuteRequest
+ * @param {input} - input prover
+ */
+ message ExecuteRequest {
+    InputProver input = 1;
+}
+
+/////////////////////
+// Responses messages
+/////////////////////
+
 /**
  * @dev Response GetStatus
  * @param {state} - server state
@@ -64,22 +103,7 @@ message GetStatusResponse {
     string version_server = 7;
     repeated string pending_request_queue_ids = 8;
 }
-```
 
-### GenProof
-#### GenProofRequest
-```
-/**
- * @dev GenProofRequest
- * @param {id} - proof identifier
- */
-message GenProofRequest {
-    string id = 1;
-}
-```
-
-#### GenProofResponse
-```
 /**
  * @dev Response GenProof
  * @param {id} - proof identifier
@@ -98,22 +122,7 @@ message GenProofResponse {
     string id = 1;
     ResultGenProof result = 2;
 }
-```
 
-### Cancel
-#### CancelRequest
-```
-/**
- * @dev CancelRequest
- * @param {id} - proof identifier
- */
- message CancelRequest {
-    string id = 1;
-}
-```
-
-#### CancelResponse
-```
 /**
  * @dev CancelResponse
  * @param {result} - request result
@@ -128,24 +137,7 @@ message CancelResponse {
     }
     ResultCancel result = 1;
 }
-```
 
-### GetProof
-#### GetProofRequest
-```
-/**
- * @dev Request GetProof
- * @param {id} - proof identifier
- * @param {timeout} - time to wait until the service responds
- */
-message GetProofRequest {
-    string id = 1;
-    uint64 timeout = 2;
-}
-```
-
-#### GetProofResponse
-```
 /**
  * @dev GetProofResponse
  * @param {id} - proof identifier
@@ -176,22 +168,7 @@ message GetProofResponse {
     ResultGetProof result = 4;
     string result_string = 5;
 }
-```
 
-### Execute
-#### ExecuteRequest
-```
-/**
- * @dev ExecuteRequest
- * @param {input} - input prover
- */
- message ExecuteRequest {
-    InputProver input = 1;
-}
-```
-
-#### ExecuteResponse
-```
 /**
  * @dev ExecuteResponse
  * @param {result} - response result
@@ -223,4 +200,89 @@ message ExecuteResponse {
     repeated string receipts = 5;
     repeated string logs = 6;
 }
-```
+
+/**
+ * @dev ZkCounters
+ * @param {ecrecover} - total ecrecover made by the circuit
+ * @param {hash_poseidon} - total poseidon hashes made by the circuit
+ * @param {hash_keccak} - total hash_keccak made by the circuit
+ * @param {arith} - total arith made by the circuit
+ */
+message ZkCounters {
+    uint32 ecrecover = 1;
+    uint32 hash_poseidon = 2;
+    uint32 hash_keccak = 3;
+    uint32 arith = 4;
+}
+
+/*
+ * @dev PublicInputs
+ * @param {old_state_root}
+ * @param {old_local_exit_root}
+ * @param {new_state_root}
+ * @param {new_local_exit_root}
+ * @param {sequencer_addr}
+ * @param {batch_hash_data}
+ * @param {chain_id}
+ * @param {batch_num}
+ * @param {block_num}
+ * @param {eth_timestamp}
+ */
+message PublicInputs {
+    string old_state_root = 1;
+    string old_local_exit_root = 2;
+    string new_state_root = 3;
+    string new_local_exit_root = 4;
+    string sequencer_addr = 5;
+    string batch_hash_data = 6;
+    uint32 chain_id = 7;
+    uint32 batch_num = 8;
+    uint32 block_num = 9;
+    uint64 eth_timestamp = 10;
+}
+
+/**
+ * @dev ProofB
+ * @param {proofs} - two elliptic curves points
+ */
+message ProofB {
+    repeated string proofs = 1;
+}
+
+/**
+ * @dev Proof
+ * @param {proof_a} - elliptic curve point
+ * @param {proof_b} - two elliptic curves points
+ * @param {proof_c} - elliptic curve point
+ */
+message Proof {
+    repeated string proof_a = 1;
+    repeated ProofB proof_b = 2;
+    repeated string proof_c = 3;
+}
+
+/**
+ * @dev InputProver
+ * @param {public_inputs} - public inputs
+ * @param {global_exit_root} - bridge global exit root
+ * @param {batch_l2_data} - contract calldata
+ * @param {db} - database containing all key-values in smt matching the old state root
+ * @param {contracts_bytecode} - key is the hash(contractBytecode), value is the bytecode itself
+ */
+message InputProver {
+    PublicInputs public_inputs = 1;
+    string global_exit_root = 2;
+    string batch_l2_data = 3;
+    map<string, string> db = 4;
+    map<string, string> contracts_bytecode = 5;
+}
+
+/**
+ * @dev PublicInputsExtended
+ * @param {public_inputs} - public inputs
+ * @param {input_hash} - global hash of all public inputs. Used as a sanity check.
+ */
+message PublicInputsExtended {
+    PublicInputs public_inputs = 1;
+    string input_hash = 2;
+}
