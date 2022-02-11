@@ -9,6 +9,7 @@ service ExecutorService {
 
 message SynchronizeBatchProposalRequest {
     bytes batch_l2_data = 1;
+	bytes state_root = 2;
 }
 
 message SynchronizeBatchProposalResponse {
