@@ -151,7 +151,7 @@ message SetHashValueResponse {
     bool success = 1;
     string error_description = 2;
 }
-message SetHashValueBulkResponse {
+message SetStateTransitionNodesResponse {
     bool success = 1;
     string error_description = 2;
 }
