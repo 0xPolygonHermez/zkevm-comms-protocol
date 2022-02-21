@@ -64,6 +64,9 @@ message GetStorageAtRequest {
     uint64 position = 2;
     string root = 3;
 }
+message GetStateTransitionNodesRequest {
+    string root = 1;
+}
 message ReverseHashRequest {
     string hash = 1;
     string root = 2;
