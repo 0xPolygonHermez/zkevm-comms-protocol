@@ -21,6 +21,8 @@ service MTService {
     rpc GetCodeHash(GetCodeHashRequest) returns (GetCodeHashResponse);
     /// Get smart contract storage for a given address and position at a given root
     rpc GetStorageAt(GetStorageAtRequest) returns (GetStorageAtResponse);
+    /// Get set of reads and writes that updated the state at a given root
+    rpc GetStateTransitionNodes(GetStateTransitionNodesRequest) returns (GetStateTransitionNodesResponse);
     /// Reverse a hash of an exisiting Merkletree node
     rpc ReverseHash(ReverseHashRequest) returns (ReverseHashResponse);
     
