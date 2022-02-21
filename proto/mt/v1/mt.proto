@@ -38,7 +38,7 @@ service MTService {
     /// Set an entry of the reverse hash table
     rpc SetHashValue(SetHashValueRequest) returns (SetHashValueResponse);
     /// Set many entries of the reverse hash table
-    rpc SetHashValueBulk(SetHashValueBulkRequest) returns (SetHashValueBulkResponse);
+    rpc SetStateTransitionNodes(SetStateTransitionNodesRequest) returns (SetStateTransitionNodesResponse);
 }
 
 // Get requests
