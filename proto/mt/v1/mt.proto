@@ -105,7 +105,7 @@ message HashValuePair {
     string value = 2;
 }
 message SetHashValueBulkRequest {
-    repeated SetHashValueRequest hash_values = 1;
+    repeated HashValuePair hash_values = 1;
 }
 
 // Get responses
