@@ -25,7 +25,7 @@ service MTService {
     rpc GetStateTransitionNodes(GetStateTransitionNodesRequest) returns (GetStateTransitionNodesResponse);
     /// Reverse a hash of an exisiting Merkletree node
     rpc ReverseHash(ReverseHashRequest) returns (ReverseHashResponse);
-    
+
     // Setters
     /// Set the balance for an account at a root
     rpc SetBalance(SetBalanceRequest) returns (SetBalanceResponse);
@@ -36,7 +36,7 @@ service MTService {
     /// Set smart contract storage for an account and position at a root
     rpc SetStorageAt(SetStorageAtRequest) returns (SetStorageAtResponse);
     /// Set an entry of the reverse hash table
-    rpc SetHashValue(SetHashValueRequest) returns (SetHashValueResponse);
+    rpc SetHashValue(HashValuePair) returns (SetHashValueResponse);
     /// Set many entries of the reverse hash table
     rpc SetStateTransitionNodes(SetStateTransitionNodesRequest) returns (SetStateTransitionNodesResponse);
 }
@@ -104,8 +104,9 @@ message HashValuePair {
     string hash = 1;
     string value = 2;
 }
-message SetHashValueBulkRequest {
-    repeated HashValuePair hash_values = 1;
+message SetStateTransitionNodesRequest {
+    repeated HashValuePair write_hash_values = 1;
+    repeated HashValuePair read_hash_values = 2;
 }
 
 // Get responses
@@ -114,7 +115,7 @@ message GetBalanceResponse {
     string balance = 1;
 }
 message GetNonceResponse {
-    uint64 nonce = 1; 
+    uint64 nonce = 1;
 }
 message GetCodeResponse {
     string code = 1;
@@ -127,7 +128,7 @@ message GetStorageAtResponse {
 }
 message GetStateTransitionNodesResponse {
     repeated HashValuePair write_hash_values = 1;
-    repeated HashValuePair read_hash_values = 1;
+    repeated HashValuePair read_hash_values = 2;
 }
 message ReverseHashResponse {
     string mt_node_value = 1;
@@ -137,19 +138,23 @@ message ReverseHashResponse {
 
 message SetBalanceResponse {
     bool success = 1;
-    string error_description = 2;
+    string new_root = 2;
+    string error_description = 3;
 }
 message SetNonceResponse {
     bool success = 1;
-    string error_description = 2;
+    string new_root = 2;
+    string error_description = 3;
 }
 message SetCodeResponse {
     bool success = 1;
-    string error_description = 2;
+    string new_root = 2;
+    string error_description = 3;
 }
 message SetStorageAtResponse {
     bool success = 1;
-    string error_description = 2;
+    string new_root = 2;
+    string error_description = 3;
 }
 message SetHashValueResponse {
     bool success = 1;
