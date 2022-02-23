@@ -100,7 +100,7 @@ message SetStorageAtRequest {
     string value = 3;
     string root = 4;
 }
-message SetHashValueRequest {
+message HashValuePair {
     string hash = 1;
     string value = 2;
 }
