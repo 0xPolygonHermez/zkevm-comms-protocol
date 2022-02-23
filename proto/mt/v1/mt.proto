@@ -125,6 +125,10 @@ message GetCodeHashResponse {
 message GetStorageAtResponse {
     string value = 1;
 }
+message GetStateTransitionNodesResponse {
+    repeated HashValuePair write_hash_values = 1;
+    repeated HashValuePair read_hash_values = 1;
+}
 message ReverseHashResponse {
     string mt_node_value = 1;
 }
