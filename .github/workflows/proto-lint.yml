@@ -20,5 +20,14 @@ jobs:
          "https://github.com/bufbuild/buf/releases/download/v${VERSION}/buf-$(uname -s)-$(uname -m)" \
          -o "${BIN}/buf" && \
          chmod +x "${BIN}/buf"
+         cat <<EOF > buf.yaml
+         version: v1
+         lint:
+           use:
+             - DEFAULT
+           except:
+             - RPC_REQUEST_STANDARD_NAME
+             - RPC_RESPONSE_STANDARD_NAME
+         EOF
       - name: Run linter
-        run: buf lint proto
+        run: buf lint proto --config ./buf.yaml
