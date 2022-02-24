@@ -28,6 +28,7 @@ jobs:
            except:
              - RPC_REQUEST_STANDARD_NAME
              - RPC_RESPONSE_STANDARD_NAME
+             - RPC_REQUEST_RESPONSE_UNIQUE
          EOF
       - name: Run linter
         run: buf lint proto --config ./buf.yaml
