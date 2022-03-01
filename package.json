@@ -19,11 +19,8 @@
   "name": "zk-mock-prover",
   "description": "Emulate the real zk-prover interface and functionality",
   "scripts": {
-    "test": "npx mocha ./test/*.test.js --exit",
-    "lint": "npx eslint ./test && npx eslint ./",
-    "lintFix": "npx eslint ./test --fix && npx eslint ./ --fix",
-    "build:docker": "docker build -t hermeznetwork/zk-mock-prover -f docker/Dockerfile .",
-    "push:docker": "docker push hermeznetwork/zk-mock-prover"
+    "setup": "npm i",
+    "test": "npx mocha ./test/*.test.js"
   },
   "repository": {
     "type": "git",

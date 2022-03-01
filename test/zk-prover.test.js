@@ -1,7 +1,7 @@
 const protoLoader = require('@grpc/proto-loader');
 const grpc = require('@grpc/grpc-js');
 
-describe('Compile proto', () => {
+describe('Compile zk_prover proto', () => {
     const PROTO_PATH = `${__dirname}/../proto/zkprover/v1/zk_prover.proto`;
 
     it('compile', async () => {
