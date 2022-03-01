@@ -1,98 +1,226 @@
 # Protocol definition
-- `proto/zk-prover-proto` contains the service specification
+- `proto/zkprover/v1/zk_prover.proto` contains the service specification
 - Following documentation pretends to explain further its behaviour
 
 ## Service functionalities
 ```
-rpc GetStatus(NoParams) returns (State) {}
-rpc GenProof(stream InputProver) returns (stream Proof) {}
-rpc Cancel(NoParams) returns (State) {}
-rpc GetProof(NoParams) returns (Proof) {}
+/**
+ * Define all methods implementes by the gRPC
+ * GetStatus: get server report about its current state (non-blocking call)
+ * GenProof: ask prover to start proof generation. If prover is biusy, request is queued (non-blocking call)
+ * Cancel: ask prover to cancel specific proof (non-blocking call)
+ * GetProof: retrieve proof information given a timeout (blocking call)
+ * Execute: execute state-transition and gets a report about the starte change (blocking call)
+ */
+service ZKProverService {
+    rpc GetStatus(GetStatusRequest) returns (GetStatusResponse) {}
+    rpc GenProof(GenProofRequest) returns (GenProofResponse) {}
+    rpc Cancel(CancelRequest) returns (CancelResponse) {}
+    rpc GetProof(stream GetProofRequest) returns (stream GetProofResponse) {}
+    rpc Execute(stream ExecuteRequest) returns (stream ExecuteResponse) {}
+}
 ```
 
 ### GetStatus
-Function to know the status of the prover.
-
-The client does not need to enter data to make this call.
-The status is returned in the following form:
+#### GetStatusRequest
 ```
-message State {
-    enum Status {
-        IDLE = 0;
-        ERROR = 1;
-        PENDING = 2;
-        FINISHED = 3;
+/**
+ * @dev GetStatusRequest
+ */
+message GetStatusRequest {}
+```
+
+#### GetStatusResponse
+```
+/**
+ * @dev Response GetStatus
+ * @param {state} - server state
+ * - BOOTING: being ready to compute proofs
+ * - COMPUTING: busy computing a proof
+ * - IDLE: waiting for a proof to compute
+ * - HALT: stop
+ * @param {last_computed_request_id} - last proof identifier that has been computed
+ * @param {last_computed_end_time} - last proof timestamp when it was finished
+ * @param {current_computing_request_id} - current proof identifier that ius being computed
+ * @param {current_computing_start_time} - current proof timestamp when it was started
+ * @param {version_proto} - .proto verion
+ * @param {version_server} - server version
+ * @param {pending_request_queue_ids} - list of pending proof identifier that are in the queue
+ */
+message GetStatusResponse {
+    enum StatusProver {
+        STATUS_PROVER_UNSPECIFIED = 0;
+        STATUS_PROVER_BOOTING = 1;
+        STATUS_PROVER_COMPUTING = 2;
+        STATUS_PROVER_IDLE = 3;
+        STATUS_PROVER_HALT = 4;
     }
-    Status status = 1;
-    Proof proof = 2;
+    StatusProver state = 1;
+    string last_computed_request_id = 2;
+    uint64 last_computed_end_time = 3;
+    string current_computing_request_id = 4;
+    uint64 current_computing_start_time = 5;
+    string version_proto = 6;
+    string version_server = 7;
+    repeated string pending_request_queue_ids = 8;
 }
 ```
-
-The status will be one of those defined in the `enum`. Proof is only defined if the status is `FINISHED`.
 
 ### GenProof
-Function to generate the proofs.
-
-The client must provide the following information to the server when calling the function:
+#### GenProofRequest
 ```
-message InputProver {
-    string message = 1;
-    PublicInputs publicInputs = 2;
-    string globalExitRoot = 3;
-    repeated string txs = 4;
-    map<string, string> keys = 5;
-}
-```
-where:
-```
-message PublicInputs {
-    string oldStateRoot = 1;
-    string oldLocalExitRoot = 2;
-    string newStateRoot = 3;
-    string newLocalExitRoot = 4;
-    string sequencerAddr = 5;
-    string batchHashData = 6;
-    uint32 chainId = 7;
-    uint32 batchNum = 8;
+/**
+ * @dev GenProofRequest
+ * @param {id} - proof identifier
+ */
+message GenProofRequest {
+    string id = 1;
 }
 ```
 
-Where the message can be:
-- `"calculate"`: to generate the proof
-- `"cancel"`: to cancel the last proof
-
-And the server will respond:
+#### GenProofResponse
 ```
-message Proof {
-    repeated string proofA = 1;
-    repeated ProofX proofB = 2;
-    repeated string  proofC = 3;
-    PublicInputsExtended publicInputsExtended = 4;
+/**
+ * @dev Response GenProof
+ * @param {id} - proof identifier
+ * @param {result} - response result
+ *  - OK: succesfull response
+ *  - ERROR: request is not correct
+ *  - INTERNAL_ERROR: server error when delivering the response
+ */
+message GenProofResponse {
+    enum ResultGenProof {
+        RESULT_GEN_PROOF_UNSPECIFIED = 0;
+        RESULT_GEN_PROOF_OK = 1;
+        RESULT_GEN_PROOF_ERROR = 2;
+        RESULT_GEN_PROOF_INTERNAL_ERROR = 3;
+    }
+    string id = 1;
+    ResultGenProof result = 2;
 }
 ```
-
-where:
-```
-message PublicInputsExtended {
-    PublicInputs publicInputs = 2;
-    string inputHash = 5;
-}
-
-message ProofX {
-    repeated string proof = 1;
-}
-```
-
-This channel will be open until the client decides to close it. In this way, the client can continue requesting proofs by sending the message `InputProver`.
 
 ### Cancel
-If the previous channel is closed and the server has computed a proof, the client can cancel it with this call.
+#### CancelRequest
+```
+/**
+ * @dev CancelRequest
+ * @param {id} - proof identifier
+ */
+ message CancelRequest {
+    string id = 1;
+}
+```
 
-The client does not need to enter data to make this call.
-The prover returns the status to confirm that the proof calculation is canceled.
+#### CancelResponse
+```
+/**
+ * @dev CancelResponse
+ * @param {result} - request result
+ *  - OK: proof has been cancelled
+ *  - ERROR: proof has not been cancelled
+ */
+message CancelResponse {
+    enum ResultCancel {
+        RESULT_CANCEL_UNSPECIFIED = 0;
+        RESULT_CANCEL_OK = 1;
+        RESULT_CANCEL_ERROR = 2;
+    }
+    ResultCancel result = 1;
+}
+```
 
 ### GetProof
-Function to get the last calculated proof.
+#### GetProofRequest
+```
+/**
+ * @dev Request GetProof
+ * @param {id} - proof identifier
+ * @param {timeout} - time to wait until the service responds
+ */
+message GetProofRequest {
+    string id = 1;
+    uint64 timeout = 2;
+}
+```
 
-The client does not need to enter data to make this call.
-If the status is `FINISHED`, the last proof is returned.
+#### GetProofResponse
+```
+/**
+ * @dev GetProofResponse
+ * @param {id} - proof identifier
+ * @param {proof} - groth16 proof
+ * @param {public} - public circuit inputs
+ * @param {result} - response result
+ *  - COMPLETED_OK: proof has been computed successfully and it is valid
+ *  - ERROR: request error
+ *  - COMPLETED_ERROR: proof has been computed successfully and it is not valid
+ *  - PENDING: proof is being computed
+ *  - INTERNAL_ERROR: server error during proof computation
+ *  - CANCEL: proof has been cancelled
+ * @param {result_string} - extends result information
+ */
+message GetProofResponse {
+    enum ResultGetProof {
+        RESULT_GET_PROOF_UNSPECIFIED = 0;
+        RESULT_GET_PROOF_COMPLETED_OK = 1;
+        RESULT_GET_PROOF_ERROR = 2;
+        RESULT_GET_PROOF_COMPLETED_ERROR = 3;
+        RESULT_GET_PROOF_PENDING = 4;
+        RESULT_GET_PROOF_INTERNAL_ERROR = 5;
+        RESULT_GET_PROOF_CANCEL = 6;
+    }
+    string id = 1;
+    Proof proof = 2;
+    PublicInputsExtended public = 3;
+    ResultGetProof result = 4;
+    string result_string = 5;
+}
+```
+
+### Execute
+#### ExecuteRequest
+```
+/**
+ * @dev ExecuteRequest
+ * @param {input} - input prover
+ */
+ message ExecuteRequest {
+    InputProver input = 1;
+}
+```
+
+#### ExecuteResponse
+```
+/**
+ * @dev ExecuteResponse
+ * @param {result} - response result
+ *  - COMPLETED_OK: proof has been computed successfully and it is valid
+ *  - ERROR: request error
+ *  - COMPLETED_ERROR: proof has been computed successfully and it is not valid
+ *  - PENDING: proof is being computed
+ *  - INTERNAL_ERROR: server error during proof computation
+ *  - CANCEL: proof has been cancelled
+ * @param {diff_keys_values} - modified keys-values in the smt
+ * @param {new_state_root} - smt new state root
+ * @param {counters} - group all necesarry circuit counters
+ * @param {receipts} - ethereum receipts
+ * @param {logs} - ethereum logs
+ */
+message ExecuteResponse {
+    enum ResultExecute {
+        RESULT_EXECUTE_UNSPECIFIED = 0;
+        RESULT_EXECUTE_COMPLETED_OK = 1;
+        RESULT_EXECUTE_ERROR = 2;
+        RESULT_EXECUTE_COMPLETED_ERR = 3;
+        RESULT_EXECUTE_INTERNAL_ERROR = 4;
+        RESULT_EXECUTE_CANCEL = 5;
+    }
+    ResultExecute result = 1;
+    map<string, string> diff_keys_values = 2;
+    string new_state_root = 3;
+    ZkCounters counters = 4;
+    repeated string receipts = 5;
+    repeated string logs = 6;
+}
+```
