@@ -71,10 +71,10 @@ message GetStatusResponse {
 ```
 /**
  * @dev GenProofRequest
- * @param {id} - proof identifier
+ * @param {input} - input prover
  */
 message GenProofRequest {
-    string id = 1;
+    InputProver input = 1;
 }
 ```
 
