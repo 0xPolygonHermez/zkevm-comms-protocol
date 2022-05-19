@@ -42,10 +42,12 @@ message ProcessTransactionResponse {
     string error = 5;
     // New SC Address in case of SC creation
     string create_address = 6;
+    // State Root
+    bytes state_root = 7;
     // Logs emited by LOG opcode
-    repeated Log logs = 7;
+    repeated Log logs = 8;
     // Geth Style Traces
-    repeated StructLog struct_logs = 8;
+    repeated StructLog struct_logs = 9;
 }
 
 message Log {
