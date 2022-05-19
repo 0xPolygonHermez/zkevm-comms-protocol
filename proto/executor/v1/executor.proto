@@ -85,7 +85,7 @@ message StructLog {
     repeated uint64 stack = 7;
     // Returned data
     bytes return_data = 8;
-    // Contend of the storage
+    // Content of the storage
     map<string, string> storage = 9;
     // Call depth
     uint32 depth = 10;
