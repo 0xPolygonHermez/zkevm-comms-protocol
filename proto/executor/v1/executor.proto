@@ -17,7 +17,7 @@ service ExecutorService {
 
 message ProcessBatchRequest {
     bytes batch_l2_data = 1;
-	bytes state_root = 2;
+    bytes state_root = 2;
 }
 
 message ProcessBatchResponse {
@@ -26,10 +26,12 @@ message ProcessBatchResponse {
 
 message ProcessTransactionRequest {
     bytes batch_l2_data = 1;
-	bytes state_root = 2;
+    bytes state_root = 2;
 }
 
 message ProcessTransactionResponse {
+    // Hash of the transaction
+    bytes tx_hash = 5;
     // Returned data from the runtime (function result or data supplied with revert opcode)
     bytes return_value = 1;
     // Total gas left as result of execution
@@ -52,34 +54,34 @@ message ProcessTransactionResponse {
 
 message Log {
     // Address of the contract that generated the event
-	string address = 1;
+    string address = 1;
     // List of topics provided by the contract
-	repeated bytes topics = 2;
+    repeated bytes topics = 2;
     // Supplied by the contract, usually ABI-encoded
-	bytes data = 3;
+    bytes data = 3;
     // Block in which the transaction was included
     uint64 block_number = 4;
     // Hash of the transaction
-	bytes tx_hash = 5;
+    bytes tx_hash = 5;
     // Index of the transaction in the block
-	uint32 tx_index = 6;
+    uint32 tx_index = 6;
     // Hash of the block in which the transaction was included
     bytes block_hash = 7;
     // Index of the log in the block
-	uint32 index = 8;
+    uint32 index = 8;
     // The Removed field is true if this log was reverted due to a chain reorganisation.
-	// You must pay attention to this field if you receive logs through a filter query.
-	bool removed = 9;
+    // You must pay attention to this field if you receive logs through a filter query.
+    bool removed = 9;
 }
 
 message StructLog {
     // Program Counter
     uint64 pc = 1;
-	// OpCode
-	string op = 2;
+    // OpCode
+    string op = 2;
     // Remaining gas
-	uint64 gas = 3;
-	// Gas cost of the operation
+    uint64 gas = 3;
+    // Gas cost of the operation
     uint64 gas_cost = 4;
     // Content of memory
     bytes memory = 5;
