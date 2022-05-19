@@ -31,25 +31,25 @@ message ProcessTransactionRequest {
 
 message ProcessTransactionResponse {
     // Hash of the transaction
-    bytes tx_hash = 5;
+    bytes tx_hash = 1;
     // Returned data from the runtime (function result or data supplied with revert opcode)
-    bytes return_value = 1;
+    bytes return_value = 2;
     // Total gas left as result of execution
-    uint64 gas_left = 2;
+    uint64 gas_left = 3;
     // Total gas used as result of execution
-    uint64 gas_used = 3;
+    uint64 gas_used = 4;
     // Total gas refunded as result of execution
-    uint64 gas_refunded = 4;
+    uint64 gas_refunded = 5;
     // Any error encountered during the execution
-    string error = 5;
+    string error = 6;
     // New SC Address in case of SC creation
-    string create_address = 6;
+    string create_address = 7;
     // State Root
-    bytes state_root = 7;
+    bytes state_root = 8;
     // Logs emited by LOG opcode
-    repeated Log logs = 8;
+    repeated Log logs = 9;
     // Geth Style Traces
-    repeated StructLog struct_logs = 9;
+    repeated StructLog struct_logs = 10;
 }
 
 message Log {
