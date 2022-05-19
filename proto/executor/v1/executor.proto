@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package executor.v1;
+
+service ExecutorService {
+    /// Processes a batch and updates Merkle Tree
+    rpc ProcessBatch(ProcessBatchRequest) returns (ProcessBatchResponse) {}
+    /// Processes a transactiion and updates Merkle Tree
+    rpc ProcessTransaction(ProcessTransactionRequest) returns (ProcessTransactionResponse) {}
+    /// Estimates gas to needed to process a transaction
+    rpc EstimateGas(ProcessTransactionRequest) returns (ProcessTransactionResponse) {}
+    /// Debugs a transaction to get its trace
+    rpc DebugTransaction(ProcessTransactionRequest) returns (ProcessTransactionResponse) {}
+}   
+
+message ProcessBatchRequest {
+    bytes batch_l2_data = 1;
+	bytes state_root = 2;
+}
+
+message ProcessBatchResponse {
+    repeated ProcessTransactionResponse responses = 1;
+}
+
+message ProcessTransactionRequest {
+    bytes batch_l2_data = 1;
+	bytes state_root = 2;
+}
+
+message ProcessTransactionResponse {
+    // Returned data from the runtime (function result or data supplied with revert opcode)
+    bytes return_value = 1;
+    // Total gas left as result of execution
+    uint64 gas_left = 2;
+    // Total gas used as result of execution
+    uint64 gas_used = 3;
+    // Total gas refunded as result of execution
+    uint64 gas_refunded = 4;
+    // Any error encountered during the execution
+    string error = 5;
+    // New SC Address in case of SC creation
+    string create_address = 6;
+    // Logs emited by LOG opcode
+    repeated Log logs = 7;
+    // Geth Style Traces
+    repeated StructLog struct_logs = 8;
+}
+
+message Log {
+    // Address of the contract that generated the event
+	string address = 1;
+    // List of topics provided by the contract
+	repeated bytes topics = 2;
+    // Supplied by the contract, usually ABI-encoded
+	bytes data = 3;
+    // Block in which the transaction was included
+    uint64 block_number = 4;
+    // Hash of the transaction
+	bytes tx_hash = 5;
+    // Index of the transaction in the block
+	uint32 tx_index = 6;
+    // Hash of the block in which the transaction was included
+    bytes block_hash = 7;
+    // Index of the log in the block
+	uint32 index = 8;
+    // The Removed field is true if this log was reverted due to a chain reorganisation.
+	// You must pay attention to this field if you receive logs through a filter query.
+	bool removed = 9;
+}
+
+message StructLog {
+    // Program Counter
+    uint64 pc = 1;
+	// OpCode
+	string op = 2;
+    // Remaining gas
+	uint64 gas = 3;
+	// Gas cost of the operation
+    uint64 gas_cost = 4;
+    // Content of memory
+    bytes memory = 5;
+    // Size of memory
+    uint32 memory_size = 6;
+    // Content of the stack
+    repeated uint64 stack = 7;
+    // Returned data
+    bytes return_data = 8;
+    // Contend of the storage
+    map<string, string> storage = 9;
+    // Call depth
+    uint32 depth = 10;
+    // Number of refunds
+    uint64 refund_counter = 11;
+    // Error
+    string error = 12;
+}
