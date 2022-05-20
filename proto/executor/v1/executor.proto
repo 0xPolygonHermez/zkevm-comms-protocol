@@ -27,6 +27,7 @@ message ProcessBatchResponse {
 message ProcessTransactionRequest {
     bytes batch_l2_data = 1;
     bytes state_root = 2;
+    string tracer = 3;
 }
 
 message ProcessTransactionResponse {
@@ -36,7 +37,7 @@ message ProcessTransactionResponse {
     bytes return_value = 2;
     // Total gas left as result of execution
     uint64 gas_left = 3;
-    // Total gas used as result of execution
+    // Total gas used as result of execution or gas estimation
     uint64 gas_used = 4;
     // Total gas refunded as result of execution
     uint64 gas_refunded = 5;
