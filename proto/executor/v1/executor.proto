@@ -16,7 +16,7 @@ service ExecutorService {
     rpc DebugBatch(ProcessBatchRequest) returns (DebugBatchResponse) {}
     /// Debugs a transaction to get its trace followin Geth's debug_traceTransaction specification
     /// It dos NOT update Merkle Tree
-    rpc DebugTransaction(ProcessTransactionRequest) returns (ProcessTransactionResponse) {}
+    rpc DebugTransaction(ProcessTransactionRequest) returns (DebugTransactionResponse) {}
 }   
 
 message ProcessBatchRequest {
@@ -33,6 +33,10 @@ message DebugBatchResponse {
     bytes return_value = 2;
     // Geth Style Traces
     repeated StructLog struct_logs = 3;
+}
+
+message DebugTransactionResponse {
+    string trace = 1;
 }
 
 message ProcessTransactionRequest {
