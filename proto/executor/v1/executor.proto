@@ -36,7 +36,64 @@ message DebugBatchResponse {
 }
 
 message DebugTransactionResponse {
-    string trace = 1;
+    TransactionContext context = 1;
+    repeated TransactionStep steps = 2;
+}
+
+message TransactionContext {
+    // CALL or CREATE
+    string type = 1;
+    // Sender of the transaction
+    string from = 2;
+    // Target of the transaction
+    string to = 3;
+    // Input of the transaction
+    bytes input = 4;
+    // Gas of the transaction
+    uint64 gas = 5;
+    // Value of the transaction
+    uint64 value = 6;
+    // Hash of the batch in which the transaction was included
+    bytes batch = 7;
+    // Returned data from the runtime (function result or data supplied with revert opcode)
+    bytes output = 8;
+    // Total gas used as result of execution
+    uint64 gas_used = 9;
+    // Execution Time
+    uint32 execution_time = 10;
+}
+
+message TransactionStep {
+    bytes state_root = 1;
+    // Call depth
+    uint32 depth = 2;
+    // Program counter
+    uint64 pc = 3;
+    // Remaining gas
+    uint64 gas = 4;
+    // Gas cost of the operation
+    uint64 gas_cost = 5;
+    // Gas refunded during the operation
+    uint64 refund = 6;
+    // Opcode
+    uint32 op = 7;
+    // Content of the stack
+    repeated uint64 stack = 8;
+    // Content of the memory
+    bytes memory = 9;
+    // Content of the storage
+    map<string, string> storage = 10;
+    // Contract information
+    Contract contract = 11;
+    // Error
+    string error = 12;
+}
+
+message Contract {
+    string address = 1;
+    string caller = 2;
+    uint64 value = 3;
+    bytes input = 4;
 }
 
 message ProcessTransactionRequest {
