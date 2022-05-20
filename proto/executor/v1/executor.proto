@@ -7,11 +7,15 @@ option go_package = "github.com/hermeznetwork/hermez-core/state/runtime/executor
 service ExecutorService {
     /// Processes a batch and updates Merkle Tree
     rpc ProcessBatch(ProcessBatchRequest) returns (ProcessBatchResponse) {}
-    /// Processes a transactiion and updates Merkle Tree
+    /// Processes a transaction and updates Merkle Tree
     rpc ProcessTransaction(ProcessTransactionRequest) returns (ProcessTransactionResponse) {}
-    /// Estimates gas to needed to process a transaction
+    /// Estimates gas to needed to process a transaction without updating the Merkle Tree
     rpc EstimateGas(ProcessTransactionRequest) returns (ProcessTransactionResponse) {}
-    /// Debugs a transaction to get its trace
+    /// Debugs a batch to get its trace following Geth's debug_traceBlockByNumber specification
+    /// It dos NOT update Merkle Tree
+    rpc DebugBatch(ProcessBatchRequest) returns (DebugBatchResponse) {}
+    /// Debugs a transaction to get its trace followin Geth's debug_traceTransaction specification
+    /// It dos NOT update Merkle Tree
     rpc DebugTransaction(ProcessTransactionRequest) returns (ProcessTransactionResponse) {}
 }   
 
@@ -22,6 +26,13 @@ message ProcessBatchRequest {
 
 message ProcessBatchResponse {
     repeated ProcessTransactionResponse responses = 1;
+}
+
+message DebugBatchResponse {
+    uint64 gas = 1;
+    bytes return_value = 2;
+    // Geth Style Traces
+    repeated StructLog struct_logs = 3;
 }
 
 message ProcessTransactionRequest {
