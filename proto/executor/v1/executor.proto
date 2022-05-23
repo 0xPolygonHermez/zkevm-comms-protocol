@@ -27,6 +27,7 @@ message ProcessBatchRequest {
 message ProcessBatchResponse {
     uint64 cumulative_gas_used = 1;
     repeated ProcessTransactionResponse responses = 2;
+    map<string, Log> logs = 3;
 }
 
 message DebugBatchResponse {
