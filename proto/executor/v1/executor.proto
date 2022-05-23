@@ -27,12 +27,6 @@ message ProcessBatchRequest {
 message ProcessBatchResponse {
     uint64 cumulative_gas_used = 1;
     repeated ProcessTransactionResponse responses = 2;
-    repeated MapLog logs = 3;
-}
-
-message MapLog {
-    string tx_hash = 1;
-    repeated Log logs = 2;
 }
 
 message DebugBatchResponse {
