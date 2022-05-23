@@ -25,7 +25,8 @@ message ProcessBatchRequest {
 }
 
 message ProcessBatchResponse {
-    repeated ProcessTransactionResponse responses = 1;
+    uint64 cumulative_gas_used = 1;
+    repeated ProcessTransactionResponse responses = 2;
 }
 
 message DebugBatchResponse {
