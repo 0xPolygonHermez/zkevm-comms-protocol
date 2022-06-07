@@ -9,10 +9,10 @@ service ExecutorService {
     rpc ProcessBatch(ProcessBatchRequest) returns (ProcessBatchResponse) {}
     /// Processes a transaction and updates Merkle Tree
     rpc ProcessTransaction(ProcessTransactionRequest) returns (ProcessTransactionResponse) {}
-    /// Estimates gas to needed to process a transaction without updating the Merkle Tree
+    /// Estimates gas needed to process a transaction without updating the Merkle Tree
     rpc EstimateGas(ProcessTransactionRequest) returns (ProcessTransactionResponse) {}
     /// Debugs a batch to get its trace following Geth's debug_traceBlockByNumber specification
-    /// It dos NOT update Merkle Tree
+    /// It does NOT update Merkle Tree
     rpc DebugBatch(ProcessBatchRequest) returns (DebugBatchResponse) {}
     /// Debugs a transaction to get its trace followin Geth's debug_traceTransaction specification
     /// It dos NOT update Merkle Tree
