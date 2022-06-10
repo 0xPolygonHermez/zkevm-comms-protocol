@@ -61,6 +61,8 @@ message TransactionContext {
     uint64 gas_used = 9;
     // Execution Time
     uint32 execution_time = 10;
+    // Starting state root
+    bytes odl_state_root = 11;
 }
 
 message TransactionStep {
