@@ -21,7 +21,8 @@ message ProcessBatchRequest {
     uint32 batch_num = 1;
     bytes batch_l2_data = 2;
     bytes old_state_root = 3;
-    bytes global_exit_root = 4; 
+    bytes global_exit_root = 4;
+    uint64 eth_timestamp = 5; 
 }
 
 message ProcessBatchResponse {
@@ -108,7 +109,8 @@ message Contract {
 message ProcessTransactionRequest {
     bytes tx_l2_data = 1;
     bytes debug_state_root = 2;
-    bool generate_trace = 3;
+    uint64 eth_timestamp = 3; 
+    bool generate_trace = 4;
 }
 
 message ProcessTransactionResponse {
