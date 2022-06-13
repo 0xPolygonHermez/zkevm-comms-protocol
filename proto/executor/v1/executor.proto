@@ -18,8 +18,10 @@ service ExecutorService {
 }   
 
 message ProcessBatchRequest {
-    bytes batch_l2_data = 1;
-    bytes state_root = 2;
+    uint32 batch_num = 1;
+    bytes batch_l2_data = 2;
+    bytes old_state_root = 3;
+    bytes global_exit_root = 4; 
 }
 
 message ProcessBatchResponse {
@@ -31,13 +33,18 @@ message DebugBatchResponse {
     uint64 gas = 1;
     bytes return_value = 2;
     // Geth Style Traces
-    repeated string traces = 3;
+    repeated Trace traces = 3;
+}
+
+message Trace {
+    repeated StructLog struct_logs = 1;
+    TransactionContext context = 2;
+    repeated TransactionStep steps = 3;
 }
 
 message DebugTransactionResponse {
-    TransactionContext context = 1;
-    repeated TransactionStep steps = 2;
-    string trace = 3;
+    ProcessTransactionResponse result  = 1;
+    Trace trace = 2;
 }
 
 message TransactionContext {
@@ -100,7 +107,7 @@ message Contract {
 
 message ProcessTransactionRequest {
     bytes tx_l2_data = 1;
-    bytes state_root = 2;
+    bytes debug_state_root = 2;
     bool generate_trace = 3;
 }
 
@@ -125,8 +132,6 @@ message ProcessTransactionResponse {
     bytes state_root = 9;
     // Logs emited by LOG opcode
     repeated Log logs = 10;
-    // Geth Style Trace
-    string trace  = 11;
 }
 
 message Log {
@@ -149,4 +154,31 @@ message Log {
     // The Removed field is true if this log was reverted due to a chain reorganisation.
     // You must pay attention to this field if you receive logs through a filter query.
     bool removed = 9;
+}
+
+message StructLog {
+    // Program Counter
+    uint64 pc = 1;
+    // OpCode
+    string op = 2;
+    // Remaining gas
+    uint64 gas = 3;
+    // Gas cost of the operation
+    uint64 gas_cost = 4;
+    // Content of memory
+    bytes memory = 5;
+    // Size of memory
+    uint32 memory_size = 6;
+    // Content of the stack
+    repeated uint64 stack = 7;
+    // Returned data
+    bytes return_data = 8;
+    // Content of the storage
+    map<string, string> storage = 9;
+    // Call depth
+    uint32 depth = 10;
+    // Number of refunds
+    uint64 refund_counter = 11;
+    // Error
+    string error = 12;
 }
