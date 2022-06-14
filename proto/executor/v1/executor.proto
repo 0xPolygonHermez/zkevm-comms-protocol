@@ -31,7 +31,7 @@ message ProcessBatchResponse {
 }
 
 message DebugBatchResponse {
-    uint64 gas = 1;
+    uint64 cumulative_gas_used = 1;
     bytes return_value = 2;
     // Geth Style Traces
     repeated Trace traces = 3;
@@ -91,8 +91,8 @@ message TransactionStep {
     repeated uint64 stack = 8;
     // Content of the memory
     bytes memory = 9;
-    // Content of the storage
-    map<string, string> storage = 10;
+    // Return Data
+    bytes return_data = 10;
     // Contract information
     Contract contract = 11;
     // Error
