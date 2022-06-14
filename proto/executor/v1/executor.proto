@@ -7,14 +7,6 @@ option go_package = "github.com/hermeznetwork/hermez-core/state/runtime/executor
 service ExecutorService {
     /// Processes a batch and updates Merkle Tree
     rpc ProcessBatch(ProcessBatchRequest) returns (ProcessBatchResponse) {}
-    /// Processes a transaction without updating the Merkle Tree
-    rpc ProcessReadOnlyTransaction(ProcessTransactionRequest) returns (ProcessTransactionResponse) {}
-    /// Debugs a batch to get its trace following Geth's debug_traceBlockByNumber specification
-    /// It does NOT update Merkle Tree
-    rpc DebugBatch(ProcessBatchRequest) returns (DebugBatchResponse) {}
-    /// Debugs a transaction to get its trace followin Geth's debug_traceTransaction specification
-    /// It does NOT update Merkle Tree
-    rpc DebugTransaction(ProcessTransactionRequest) returns (DebugTransactionResponse) {}
 }   
 
 message ProcessBatchRequest {
@@ -22,30 +14,27 @@ message ProcessBatchRequest {
     bytes batch_l2_data = 2;
     bytes old_state_root = 3;
     bytes global_exit_root = 4;
-    uint64 eth_timestamp = 5; 
+    uint64 eth_timestamp = 5;
+    bool update_merkle_tree = 6;
+    bool generate_execute_trace = 7;
+    bool generate_call_trace = 8; 
 }
 
 message ProcessBatchResponse {
     uint64 cumulative_gas_used = 1;
     repeated ProcessTransactionResponse responses = 2;
+    uint32 cnt_keccak_hashes = 3;
+    uint32 cnt_poseidon_hashes = 4;
+    uint32 cnt_poseidon_paddings = 5;
+    uint32 cnt_mem_aligns = 6;
+    uint32 cnt_arithmetics = 7;
+    uint32 cnt_binaries = 8;
+    uint32 cnt_steps = 9;
 }
 
-message DebugBatchResponse {
-    uint64 cumulative_gas_used = 1;
-    bytes return_value = 2;
-    // Geth Style Traces
-    repeated Trace traces = 3;
-}
-
-message Trace {
-    repeated StructLog struct_logs = 1;
+message CallTrace {
     TransactionContext context = 2;
     repeated TransactionStep steps = 3;
-}
-
-message DebugTransactionResponse {
-    ProcessTransactionResponse result  = 1;
-    Trace trace = 2;
 }
 
 message TransactionContext {
@@ -70,7 +59,7 @@ message TransactionContext {
     // Execution Time
     uint32 execution_time = 10;
     // Starting state root
-    bytes odl_state_root = 11;
+    bytes old_state_root = 11;
 }
 
 message TransactionStep {
@@ -106,13 +95,6 @@ message Contract {
     bytes input = 4;
 }
 
-message ProcessTransactionRequest {
-    bytes tx_l2_data = 1;
-    bytes debug_state_root = 2;
-    uint64 eth_timestamp = 3; 
-    bool generate_trace = 4;
-}
-
 message ProcessTransactionResponse {
     // Hash of the transaction
     bytes tx_hash = 1;
@@ -134,6 +116,11 @@ message ProcessTransactionResponse {
     bytes state_root = 9;
     // Logs emited by LOG opcode
     repeated Log logs = 10;
+    // Indicates if this tx didn't fit into the batch 
+    bool unprocessed_transaction = 11;
+    // Trace
+    repeated ExecutionTraceStep execution_trace = 12;
+    CallTrace call_trace = 13;
 }
 
 message Log {
@@ -143,22 +130,19 @@ message Log {
     repeated bytes topics = 2;
     // Supplied by the contract, usually ABI-encoded
     bytes data = 3;
-    // Block in which the transaction was included
-    uint64 block_number = 4;
+    // Batch in which the transaction was included
+    uint64 batch_number = 4;
     // Hash of the transaction
     bytes tx_hash = 5;
     // Index of the transaction in the block
     uint32 tx_index = 6;
-    // Hash of the block in which the transaction was included
-    bytes block_hash = 7;
+    // Hash of the batch in which the transaction was included
+    bytes batch_hash = 7;
     // Index of the log in the block
     uint32 index = 8;
-    // The Removed field is true if this log was reverted due to a chain reorganisation.
-    // You must pay attention to this field if you receive logs through a filter query.
-    bool removed = 9;
 }
 
-message StructLog {
+message ExecutionTraceStep {
     // Program Counter
     uint64 pc = 1;
     // OpCode
