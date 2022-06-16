@@ -14,8 +14,6 @@ message Version {
  * GenProof: ask prover to start proof generation. If prover is biusy, request is queued (non-blocking call)
  * Cancel: ask prover to cancel specific proof (non-blocking call)
  * GetProof: retrieve proof information given a timeout (blocking call)
- * Execute: execute state-transition and gets a report about the starte change (blocking call)
- * SynchronizeBatchProposal: processes a batch proposed in L1 and updates Merkle Tree
  */
 service ZKProverService {
     rpc GetStatus(GetStatusRequest) returns (GetStatusResponse) {}
