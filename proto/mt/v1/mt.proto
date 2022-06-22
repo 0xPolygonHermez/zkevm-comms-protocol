@@ -180,7 +180,7 @@ message SiblingList {
 */
 message ResultCode {
     enum Code {
-        CODE__UNSPECIFIED = 0;
+        CODE_UNSPECIFIED = 0;
         CODE_SUCCESS = 1;
         CODE_KEY_NOT_FOUND = 2;
         CODE_DB_ERROR = 3;
