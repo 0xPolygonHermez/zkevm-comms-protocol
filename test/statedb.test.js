@@ -2,7 +2,7 @@ const protoLoader = require('@grpc/proto-loader');
 const grpc = require('@grpc/grpc-js');
 
 describe('Compile mt proto', () => {
-    const PROTO_PATH = `${__dirname}/../proto/mt/v1/mt.proto`;
+    const PROTO_PATH = `${__dirname}/../proto/statedb/v1/statedb.proto`;
 
     it('compile', async () => {
         const packageDefinition = protoLoader.loadSync(
