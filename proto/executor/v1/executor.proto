@@ -127,7 +127,7 @@ message ProcessTransactionResponse {
     // Logs emited by LOG opcode
     repeated Log logs = 10;
     // Indicates if this tx didn't fit into the batch 
-    bool unprocessed_transaction = 11;
+    uint32 unprocessed_transaction = 11;
     // Trace
     repeated ExecutionTraceStep execution_trace = 12;
     CallTrace call_trace = 13;
