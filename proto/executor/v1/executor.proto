@@ -205,4 +205,8 @@ enum Error {
     ERROR_EXECUTION_REVERTED = 10;
     // ERROR_CODE_STORE_OUT_OF_GAS indicates there is not enough gas for the storage
     ERROR_CODE_STORE_OUT_OF_GAS = 11;
+    // ERROR_OUT_OF_COUNTERS indicates there is not enough counters to continue the execution
+    ERROR_OUT_OF_COUNTERS = 12;
+    // ERROR_INVALID_TX indicates the transaction is invalid
+    ERROR_INVALID_TX = 13;
 }
