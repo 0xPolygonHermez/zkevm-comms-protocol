@@ -42,8 +42,8 @@ message ProcessBatchResponse {
 }
 
 message CallTrace {
-    TransactionContext context = 2;
-    repeated TransactionStep steps = 3;
+    TransactionContext context = 1;
+    repeated TransactionStep steps = 2;
 }
 
 message TransactionContext {
