@@ -132,7 +132,7 @@ message ProcessTransactionResponse {
     bytes state_root = 10;
     // Logs emited by LOG opcode
     repeated Log logs = 11;
-    // Indicates if this tx didn't fit into the batch 
+    // Indicates if this tx didn't fit into the batch
     uint32 unprocessed_transaction = 12;
     // Trace
     repeated ExecutionTraceStep execution_trace = 13;
@@ -187,7 +187,7 @@ message ExecutionTraceStep {
 
 enum Error {
     ERROR_UNSPECIFIED = 0;
-    // ERROR_NO_ERROR indicates the execution ended successfully 
+    // ERROR_NO_ERROR indicates the execution ended successfully
     ERROR_NO_ERROR = 1;
     // ERROR_OUT_OF_GAS indicates there is not enough balance to continue the execution
     ERROR_OUT_OF_GAS = 2;
