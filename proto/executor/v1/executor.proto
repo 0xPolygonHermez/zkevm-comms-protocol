@@ -110,6 +110,7 @@ message ProcessTransactionResponse {
     // Hash of the transaction
     bytes tx_hash = 1;
     // RLP encoded transaction
+    // [nonce, gasPrice, gasLimit, to, value, data, v, r, s]
     bytes rlp_tx = 2;
     // Type indicates legacy transaction
     // It will be always 0 (legacy) in the executor
