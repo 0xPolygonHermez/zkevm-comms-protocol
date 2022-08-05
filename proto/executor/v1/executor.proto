@@ -212,7 +212,7 @@ enum Error {
     // ERROR_OUT_OF_COUNTERS indicates there is not enough counters to continue the execution
     ERROR_OUT_OF_COUNTERS = 13;
     // ERROR_INVALID_TX indicates the transaction is invalid because of invalid jump dest, invalid opcode, invalid deploy
-    // or invalid stattic tx
+    // or invalid static tx
     ERROR_INVALID_TX = 14;
     // ERROR_INTRINSIC_INVALID_TX indicates the transaction is failing at the intrinsic checks
     ERROR_INTRINSIC_INVALID_TX = 15;
