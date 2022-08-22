@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package zkprover.v1;
 
+option go_package = "github.com/0xPolygonHermez/zkevm-node/proverclient/pb";
+
 message Version {
     string v0_0_1 = 1;
 }
