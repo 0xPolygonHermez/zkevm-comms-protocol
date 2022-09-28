@@ -39,6 +39,7 @@ message ProcessBatchResponse {
     uint32 cnt_arithmetics = 9;
     uint32 cnt_binaries = 10;
     uint32 cnt_steps = 11;
+    Error error = 12;
 }
 
 message CallTrace {
