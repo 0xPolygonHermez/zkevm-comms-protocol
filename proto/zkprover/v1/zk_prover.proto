@@ -219,6 +219,7 @@ message InputProver {
     string batch_l2_data = 3;
     map<string, string> db = 4; // For debug/testing purpposes only. Don't fill this on production
     map<string, string> contracts_bytecode = 5; // For debug/testing purpposes only. Don't fill this on production
+    uint64 chain_id = 6;
 }
 
 /**
