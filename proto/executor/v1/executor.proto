@@ -218,7 +218,7 @@ enum Error {
     // ERROR_OUT_OF_COUNTERS_BINARY indicates there is not enough binary counters to continue the execution
     ERROR_OUT_OF_COUNTERS_BINARY = 15;
     // ERROR_OUT_OF_COUNTERS_MEM indicates there is not enough memory aligncounters to continue the execution
-     ERROR_OUT_OF_COUNTERS_MEM = 16;
+    ERROR_OUT_OF_COUNTERS_MEM = 16;
     // ERROR_OUT_OF_COUNTERS_ARITH indicates there is not enough arith counters to continue the execution
     ERROR_OUT_OF_COUNTERS_ARITH = 17;
     // ERROR_OUT_OF_COUNTERS_PADDING indicates there is not enough padding counters to continue the execution
@@ -239,7 +239,7 @@ enum Error {
     // ERROR_INTRINSIC_INVALID_BALANCE indicates the transaction is failing at balance intrinsic check
     ERROR_INTRINSIC_INVALID_BALANCE = 25;
     // ERROR_INVALID_BATCH_GAS_LIMIT indicates the batch is exceeding the batch gas limit
-    ERROR_INVALID_BATCH_GAS_LIMIT = 26; 
+    ERROR_INTRINSIC_INVALID_BATCH_GAS_LIMIT = 26; 
     // ERROR_BATCH_DATA_TOO_BIG indicates the batch_l2_data is too big to be processed
     ERROR_BATCH_DATA_TOO_BIG = 27;
 }
