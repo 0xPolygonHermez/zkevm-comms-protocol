@@ -213,8 +213,8 @@ message Proof {
  */
 message InputProver {
     PublicInputs public_inputs = 1;
-    map<string, string> db = 4; // For debug/testing purpposes only. Don't fill this on production
-    map<string, string> contracts_bytecode = 5; // For debug/testing purpposes only. Don't fill this on production
+    map<string, string> db = 2; // For debug/testing purpposes only. Don't fill this on production
+    map<string, string> contracts_bytecode = 3; // For debug/testing purpposes only. Don't fill this on production
 }
 
 /**
