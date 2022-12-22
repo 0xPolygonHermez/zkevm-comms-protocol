@@ -45,10 +45,10 @@ message ProcessBatchResponse {
     uint64 cumulative_gas_used = 12;
     repeated ProcessTransactionResponse responses = 13;
     Error error = 14;
-    repeated ModifiedState modified_state = 15;
+    repeated TouchedAddresses touched_addresses = 15;
 }
 
-message ModifiedState {
+message TouchedAddresses {
     string address = 1;
     string nonce = 2;
     string balance = 3;
