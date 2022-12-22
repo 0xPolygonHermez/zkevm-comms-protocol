@@ -50,8 +50,8 @@ message ProcessBatchResponse {
 
 message TouchedAddresses {
     string address = 1;
-    string nonce = 2;
-    string balance = 3;
+    optional string nonce = 2;
+    optional string balance = 3;
 }
 
 message CallTrace {
