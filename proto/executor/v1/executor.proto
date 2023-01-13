@@ -256,18 +256,18 @@ enum Error {
 
 enum TopLevelError {
     TOP_LEVEL_ERROR_UNSPECIFIED = 0;
-    // ERROR_NO_ERROR indicates there was no error
+    // TOP_LEVEL_ERROR_NO_ERROR indicates there was no error
     TOP_LEVEL_ERROR_NO_ERROR = 1;
-    // ERROR_COUNTERS_OVERFLOW_KECCAK indicates that the keccak counter exceeded the maximum
+    // TOP_LEVEL_ERROR_COUNTERS_OVERFLOW_KECCAK indicates that the keccak counter exceeded the maximum
     TOP_LEVEL_ERROR_COUNTERS_OVERFLOW_KECCAK = 2;
-    // ERROR_COUNTERS_OVERFLOW_BINARY indicates that the binary counter exceeded the maximum
+    // TOP_LEVEL_ERROR_COUNTERS_OVERFLOW_BINARY indicates that the binary counter exceeded the maximum
     TOP_LEVEL_ERROR_COUNTERS_OVERFLOW_BINARY = 3;
-    // ERROR_COUNTERS_OVERFLOW_MEM indicates that the memory align counter exceeded the maximum
+    // TOP_LEVEL_ERROR_COUNTERS_OVERFLOW_MEM indicates that the memory align counter exceeded the maximum
     TOP_LEVEL_ERROR_COUNTERS_OVERFLOW_MEM = 4;
-    // ERROR_COUNTERS_OVERFLOW_ARITH indicates that the arith counter exceeded the maximum
+    // TOP_LEVEL_ERROR_COUNTERS_OVERFLOW_ARITH indicates that the arith counter exceeded the maximum
     TOP_LEVEL_ERROR_COUNTERS_OVERFLOW_ARITH = 5;
-    // ERROR_COUNTERS_OVERFLOW_PADDING indicates that the padding counter exceeded the maximum
+    // TOP_LEVEL_ERROR_COUNTERS_OVERFLOW_PADDING indicates that the padding counter exceeded the maximum
     TOP_LEVEL_ERROR_COUNTERS_OVERFLOW_PADDING = 6;
-    // ERROR_COUNTERS_OVERFLOW_POSEIDON indicates that the poseidon counter exceeded the maximum
+    // TOP_LEVEL_ERROR_COUNTERS_OVERFLOW_POSEIDON indicates that the poseidon counter exceeded the maximum
     TOP_LEVEL_ERROR_COUNTERS_OVERFLOW_POSEIDON = 7;
 }
