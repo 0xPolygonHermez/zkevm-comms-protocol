@@ -45,7 +45,7 @@ message ProcessBatchResponse {
     uint64 cumulative_gas_used = 12;
     repeated ProcessTransactionResponse responses = 13;
     Error error = 14;
-    repeated TouchedAddresses touched_addresses = 15;
+    repeated ReadWriteAddresses read_write_addresses = 15;
 }
 
 message ReadWriteAddresses {
