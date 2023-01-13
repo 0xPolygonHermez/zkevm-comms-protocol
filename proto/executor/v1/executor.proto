@@ -269,5 +269,5 @@ enum TopLevelError {
     // ERROR_COUNTERS_OVERFLOW_PADDING indicates that the padding counter exceeded the maximum
     ERROR_COUNTERS_OVERFLOW_PADDING = 6;
     // ERROR_COUNTERS_OVERFLOW_POSEIDON indicates that the poseidon counter exceeded the maximum
-    ERROR_COUNTERS_OVERFLOW_POSEIDON = 7
+    ERROR_COUNTERS_OVERFLOW_POSEIDON = 7;
 }
