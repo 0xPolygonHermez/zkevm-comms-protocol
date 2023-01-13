@@ -44,7 +44,7 @@ message ProcessBatchResponse {
     uint32 cnt_steps = 11;
     uint64 cumulative_gas_used = 12;
     repeated ProcessTransactionResponse responses = 13;
-    Error error = 14;
+    TopLevelError error = 14;
     repeated ReadWriteAddresses read_write_addresses = 15;
 }
 
@@ -252,4 +252,22 @@ enum Error {
     ERROR_INTRINSIC_TX_GAS_OVERFLOW = 26;
     // ERROR_BATCH_DATA_TOO_BIG indicates the batch_l2_data is too big to be processed
     ERROR_BATCH_DATA_TOO_BIG = 27;
+}
+
+enum TopLevelError {
+    ERROR_UNSPECIFIED = 0;
+    // ERROR_NO_ERROR indicates there was no error
+    ERROR_NO_ERROR = 1;
+    // ERROR_COUNTERS_OVERFLOW_KECCAK indicates that the keccak counter exceeded the maximum
+    ERROR_COUNTERS_OVERFLOW_KECCAK = 2;
+    // ERROR_COUNTERS_OVERFLOW_BINARY indicates that the binary counter exceeded the maximum
+    ERROR_COUNTERS_OVERFLOW_BINARY = 3;
+    // ERROR_COUNTERS_OVERFLOW_MEM indicates that the memory align counter exceeded the maximum
+    ERROR_COUNTERS_OVERFLOW_MEM = 4;
+    // ERROR_COUNTERS_OVERFLOW_ARITH indicates that the arith counter exceeded the maximum
+    ERROR_COUNTERS_OVERFLOW_ARITH = 5;
+    // ERROR_COUNTERS_OVERFLOW_PADDING indicates that the padding counter exceeded the maximum
+    ERROR_COUNTERS_OVERFLOW_PADDING = 6;
+    // ERROR_COUNTERS_OVERFLOW_POSEIDON indicates that the poseidon counter exceeded the maximum
+    ERROR_COUNTERS_OVERFLOW_POSEIDON = 7
 }
