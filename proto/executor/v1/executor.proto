@@ -45,13 +45,14 @@ message ProcessBatchResponse {
     uint64 cumulative_gas_used = 12;
     repeated ProcessTransactionResponse responses = 13;
     ExecutorError error = 14;
-    repeated ReadWriteAddresses read_write_addresses = 15;
+    map<string, InfoReadWrite> read_write_addresses = 15;
 }
 
-message ReadWriteAddresses {
-    string address = 1;
-    optional uint64 nonce = 2;
-    optional string balance = 3;
+message InfoReadWrite {
+    // If nonce="" then it has not been set; if set, string is in decimal (base 10)
+    string nonce = 1;
+    // If balance="" then it has not been set; if set, string is in decimal (base 10)
+    string balance = 2;
 }
 
 message CallTrace {
