@@ -1,5 +1,5 @@
 {
-  "dependencies": {
+  "devDependencies": {
     "@grpc/grpc-js": "^1.4.4",
     "@grpc/proto-loader": "^0.6.7",
     "async": "^3.2.2",
@@ -22,6 +22,9 @@
     "setup": "npm i",
     "test": "npx mocha ./test/*.test.js"
   },
+  "files": [
+    "proto"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hermeznetwork/zk-mock-prover.git"
