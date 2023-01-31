@@ -254,6 +254,8 @@ enum RomError {
     ROM_ERROR_INTRINSIC_TX_GAS_OVERFLOW = 26;
     // ROM_ERROR_BATCH_DATA_TOO_BIG indicates the batch_l2_data is too big to be processed
     ROM_ERROR_BATCH_DATA_TOO_BIG = 27;
+    // ROM_ERROR_UNSUPPORTED_FORK_ID indicates that the fork id is not supported
+    ROM_ERROR_UNSUPPORTED_FORK_ID = 28;
 }
 
 enum ExecutorError {
