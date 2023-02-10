@@ -29,6 +29,11 @@ message ProcessBatchRequest {
     // For testing purposes only
     map<string, string> db = 15;
     map<string, string> contracts_bytecode = 16; // For debug/testing purpposes only. Don't fill this on production
+    // flags for trace debug
+    uint32 disable_storage = 17;
+    uint32 disable_stack = 18;
+    uint32 enable_memory = 19;
+    uint32 enable_return_data = 20;
 }
 
 message ProcessBatchResponse {
