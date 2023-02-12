@@ -5,9 +5,9 @@
 ## Service functionalities
 ```
 /**
- * Define all methods implementes by the gRPC
+ * Define all methods implemented by the gRPC
  * GetStatus: get server report about its current state (non-blocking call)
- * GenProof: ask prover to start proof generation. If prover is biusy, request is queued (non-blocking call)
+ * GenProof: ask prover to start proof generation. If prover is busy, request is queued (non-blocking call)
  * Cancel: ask prover to cancel specific proof (non-blocking call)
  * GetProof: retrieve proof information given a timeout (blocking call)
  * Execute: execute state-transition and gets a report about the starte change (blocking call)
@@ -203,7 +203,7 @@ message GetProofResponse {
  *  - CANCEL: proof has been cancelled
  * @param {diff_keys_values} - modified keys-values in the smt
  * @param {new_state_root} - smt new state root
- * @param {counters} - group all necesarry circuit counters
+ * @param {counters} - group all necessary circuit counters
  * @param {receipts} - ethereum receipts
  * @param {logs} - ethereum logs
  */
