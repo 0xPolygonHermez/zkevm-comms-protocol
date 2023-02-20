@@ -239,7 +239,7 @@ message GetProofResponse {
  * @param {public} - public circuit inputs
 */
 message FinalProof {
-    bytes proof = 1;
+    string proof = 1;
     PublicInputsExtended public = 2;
 }
 
