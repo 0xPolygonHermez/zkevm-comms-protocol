@@ -192,6 +192,9 @@ message ProcessTransactionResponse {
     // Trace
     repeated ExecutionTraceStep execution_trace = 13;
     CallTrace call_trace = 14;
+    // Efective Gas Price
+    string effective_gas_price = 15;
+    uint32 effective_percentage = 16;
 }
 
 message Log {
@@ -324,5 +327,4 @@ enum ExecutorError {
     EXECUTOR_ERROR_FEA2SCALAR = 10;
     // EXECUTOR_ERROR_TOS32 indicates that there is a TOS32 error in the execution
     EXECUTOR_ERROR_TOS32 = 11;
-
 }
