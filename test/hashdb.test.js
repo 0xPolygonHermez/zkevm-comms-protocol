@@ -1,6 +1,7 @@
 const protoLoader = require('@grpc/proto-loader');
 const grpc = require('@grpc/grpc-js');
 
+
 describe('Compile hashdb proto', () => {
     const PROTO_PATH = `${__dirname}/../proto/hashdb/v1/hashdb.proto`;
 
