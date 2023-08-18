@@ -6,11 +6,16 @@ package executor.v1;
 
 option go_package = "github.com/0xPolygonHermez/zkevm-node/state/runtime/executor";
 
+// TODO: re-check indexes
+
 service ExecutorService {
     /// Processes a batch
     rpc ProcessBatch(ProcessBatchRequest) returns (ProcessBatchResponse) {}
     rpc GetFlushStatus (google.protobuf.Empty) returns (GetFlushStatusResponse) {}
 }
+
+// Sequencer Must always call with flag 'mock_verify_ger' set to 1
+// Either Sequencer or Executor should provide the fake smtProof
 
 message ProcessBatchRequest {
     bytes old_state_root = 1;
@@ -19,19 +24,28 @@ message ProcessBatchRequest {
     uint64 chain_id = 4;
     uint64 fork_id = 5;
     bytes batch_l2_data = 6;
-    bytes global_exit_root = 7;
-    uint64 eth_timestamp = 8;
+    bytes historic_ger_root = 7;
+    uint64 eth_timestamp_limit = 8;
     string coinbase = 9;
+    bool isForced = 10;
+    // TODO: sequencer to mock it. It could be done at executor level
+    repeated SiblingsSmtProofGer smt_proofs = 11;
     uint32 update_merkle_tree = 10;
     // flag to indicate that counters should not be taken into account
     uint64 no_counters = 11;
     // from is used for unsigned transactions with sender
     string from = 12;
+    // mock_verify_ger is used for slip check when verify smt proof at the time to insert a ger
+    bool mock_verify_ger = 12;
     // For testing purposes only
     map<string, string> db = 13;
     map<string, string> contracts_bytecode = 14; // For debug/testing purpposes only. Don't fill this on production
     TraceConfig trace_config = 15;
     string external_request_id = 16;
+}
+
+message SiblingsSmtProofGer {
+    repeated bytes sibglings_smt_proof_ger = 1;
 }
 
 message ProcessBatchResponse {
@@ -46,8 +60,7 @@ message ProcessBatchResponse {
     uint32 cnt_arithmetics = 9;
     uint32 cnt_binaries = 10;
     uint32 cnt_steps = 11;
-    uint64 cumulative_gas_used = 12;
-    repeated ProcessTransactionResponse responses = 13;
+    repeated ProcessBlockResponse block_responses = 13;
     ExecutorError error = 14;
     map<string, InfoReadWrite> read_write_addresses = 15;
     uint64 flush_id = 16;
@@ -87,6 +100,8 @@ message TraceConfig {
     uint32 enable_memory = 3;
     // Enables return data (default=false)
     uint32 enable_return_data = 4;
+    // TODO: remove the two options and only generate one of them
+    // Check with node which one is being used
     // Hash of tx in batch to retrieve the execution trace
     bytes tx_hash_to_generate_execute_trace = 5;
     // Hash of tx in batch to retrieve the call trace
@@ -117,8 +132,8 @@ message TransactionContext {
     uint64 gas = 5;
     // Value of the transaction
     string value = 6;
-    // Hash of the batch in which the transaction was included
-    bytes batch = 7;
+    // Hash of the block in which the transaction was included
+    bytes block_hash = 7;
     // Returned data from the runtime (function result or data supplied with revert opcode)
     bytes output = 8;
     // Total gas used as result of execution
@@ -172,9 +187,24 @@ message Contract {
     string type = 6;
 }
 
+message ProcessBlockResponse {
+    bytes previous_blockhash = 1; // must match the old_state_root
+    string coinbaseL2 = 1;
+    uint32 blockNumber = 1;
+    uint64 gas_limit = 1;
+    uint64 timestamp = 1;
+    bytes GER = 1;
+    uint64 cumulative_gas_used = 12;
+    bytes block_hash = 12; // must match the new_state_root
+    // TODO: check with node team more fields to add
+    repeated ProcessTransactionResponse responses = 13;
+}
+
 message ProcessTransactionResponse {
     // Hash of the transaction
     bytes tx_hash = 1;
+    // Hash of the transaction computed by the ROM
+    bytes tx_hash_L2 = 1;
     // RLP encoded transaction
     // [nonce, gasPrice, gasLimit, to, value, data, v, r, s]
     bytes rlp_tx = 2;
@@ -187,6 +217,8 @@ message ProcessTransactionResponse {
     uint64 gas_left = 5;
     // Total gas used as result of execution or gas estimation
     uint64 gas_used = 6;
+    // Accumulative gas used by this tranaction in the block
+    uint64 gas_used = 6;
     // Total gas refunded as result of execution
     uint64 gas_refunded = 7;
     // Any error encountered during the execution
@@ -198,6 +230,7 @@ message ProcessTransactionResponse {
     // Logs emited by LOG opcode
     repeated Log logs = 11;
     // Trace
+    // TODO: not needed. Could be just only one and the the zkevm-node handles which one needs to build
     repeated ExecutionTraceStep execution_trace = 13;
     CallTrace call_trace = 14;
     // Efective Gas Price
@@ -213,13 +246,15 @@ message Log {
     // Supplied by the contract, usually ABI-encoded
     bytes data = 3;
     // Batch in which the transaction was included
-    uint64 batch_number = 4;
+    uint64 block_number = 4;
     // Hash of the transaction
     bytes tx_hash = 5;
+    // Hash of the transaction L2 computed by the rom
+    bytes tx_hash_L2 = 5;
     // Index of the transaction in the block
     uint32 tx_index = 6;
-    // Hash of the batch in which the transaction was included
-    bytes batch_hash = 7;
+    // Hash of the block in which the transaction was included
+    bytes block_hash = 7;
     // Index of the log in the block
     uint32 index = 8;
 }

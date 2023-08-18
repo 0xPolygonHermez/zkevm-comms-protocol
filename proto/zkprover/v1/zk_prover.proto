@@ -8,6 +8,7 @@ message Version {
     string v0_0_1 = 1;
 }
 
+// TODO: ask if this proto is oudated
 // timestamps are represented in unix time in seconds
 
 /**

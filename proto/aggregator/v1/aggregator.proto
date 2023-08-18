@@ -261,10 +261,21 @@ message PublicInputs {
     uint64 chain_id = 4;
     uint64 fork_id = 5;
     bytes batch_l2_data = 6;
-    bytes global_exit_root = 7;
-    uint64 eth_timestamp = 8;
+    bytes historic_ger_root = 7;
+    uint64 eth_timestamp_limit = 8;
     string sequencer_addr = 9;
+    bool isForced = 10;
+    repeated SiblingsSmtProofGer smt_proofs = 11;
     string aggregator_addr = 10;
+}
+
+// Each changeL2Batch transaction ('except index = 0' OR 'repeated ger') must need a smt proof
+// from the aggregator side
+// The executor does not need this proof since it is still don't know in the trusted state
+// The aggregator does need this proof for each changeL2Batch
+// this proof shpuld provided by an external service, probably bridge-service
+message SiblingsSmtProofGer {
+    repeated bytes sibglings_smt_proof_ger = 1;
 }
 
 /**
