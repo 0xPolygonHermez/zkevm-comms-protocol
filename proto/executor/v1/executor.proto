@@ -4,7 +4,7 @@ import "google/protobuf/empty.proto";
 
 package executor.v1;
 
-option go_package = "github.com/0xPolygonHermez/zkevm-node/state/runtime/executor/pb";
+option go_package = "github.com/0xPolygonHermez/zkevm-node/state/runtime/executor";
 
 service ExecutorService {
     /// Processes a batch
@@ -389,11 +389,11 @@ enum ExecutorError {
     EXECUTOR_ERROR_SM_MAIN_STORAGE_READ_MISMATCH = 35;
     // EXECUTOR_ERROR_SM_MAIN_STORAGE_WRITE_MISMATCH indicates that the storage read instruction check failed
     EXECUTOR_ERROR_SM_MAIN_STORAGE_WRITE_MISMATCH = 36;
-    // EXECUTOR_ERROR_SM_MAIN_HASHK_VALUE_MISMATCH indicates that the Keccak hash instruction check failed
+    // EXECUTOR_ERROR_SM_MAIN_HASHK_VALUE_MISMATCH indicates that the Keccak hash instruction value check failed
     EXECUTOR_ERROR_SM_MAIN_HASHK_VALUE_MISMATCH = 37;
-    // EXECUTOR_ERROR_SM_MAIN_HASHK_PADDING_MISMATCH indicates that the Keccak hash instruction check failed
+    // EXECUTOR_ERROR_SM_MAIN_HASHK_PADDING_MISMATCH indicates that the Keccak hash instruction padding check failed
     EXECUTOR_ERROR_SM_MAIN_HASHK_PADDING_MISMATCH = 38;
-    // EXECUTOR_ERROR_SM_MAIN_HASHK_SIZE_MISMATCH indicates that the Keccak hash instruction check failed
+    // EXECUTOR_ERROR_SM_MAIN_HASHK_SIZE_MISMATCH indicates that the Keccak hash instruction size check failed
     EXECUTOR_ERROR_SM_MAIN_HASHK_SIZE_MISMATCH = 39;
     // EXECUTOR_ERROR_SM_MAIN_HASHKLEN_LENGTH_MISMATCH indicates that the Keccak hash length instruction length check failed
     EXECUTOR_ERROR_SM_MAIN_HASHKLEN_LENGTH_MISMATCH = 40;
@@ -405,11 +405,11 @@ enum ExecutorError {
     EXECUTOR_ERROR_SM_MAIN_HASHKDIGEST_DIGEST_MISMATCH = 43;
     // EXECUTOR_ERROR_SM_MAIN_HASHKDIGEST_CALLED_TWICE indicates that the Keccak hash digest instruction called once check failed
     EXECUTOR_ERROR_SM_MAIN_HASHKDIGEST_CALLED_TWICE = 44;
-    // EXECUTOR_ERROR_SM_MAIN_HASHP_VALUE_MISMATCH indicates that the Poseidon hash instruction check failed
+    // EXECUTOR_ERROR_SM_MAIN_HASHP_VALUE_MISMATCH indicates that the Poseidon hash instruction value check failed
     EXECUTOR_ERROR_SM_MAIN_HASHP_VALUE_MISMATCH = 45;
-    // EXECUTOR_ERROR_SM_MAIN_HASHP_PADDING_MISMATCH indicates that the Poseidon hash instruction check failed
+    // EXECUTOR_ERROR_SM_MAIN_HASHP_PADDING_MISMATCH indicates that the Poseidon hash instruction padding check failed
     EXECUTOR_ERROR_SM_MAIN_HASHP_PADDING_MISMATCH = 46;
-    // EXECUTOR_ERROR_SM_MAIN_HASHP_SIZE_MISMATCH indicates that the Poseidon hash instruction check failed
+    // EXECUTOR_ERROR_SM_MAIN_HASHP_SIZE_MISMATCH indicates that the Poseidon hash instruction size check failed
     EXECUTOR_ERROR_SM_MAIN_HASHP_SIZE_MISMATCH = 47;
     // EXECUTOR_ERROR_SM_MAIN_HASHPLEN_LENGTH_MISMATCH indicates that the Poseidon hash length instruction length check failed
     EXECUTOR_ERROR_SM_MAIN_HASHPLEN_LENGTH_MISMATCH = 48;
