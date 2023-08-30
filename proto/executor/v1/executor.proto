@@ -30,21 +30,22 @@ message ProcessBatchRequest {
     bool isForced = 10;
     // TODO: sequencer to mock it. It could be done at executor level
     repeated SiblingsSmtProofGer smt_proofs = 11;
-    uint32 update_merkle_tree = 10;
+    uint32 update_merkle_tree = 12;
     // flag to indicate that counters should not be taken into account
-    uint64 no_counters = 11;
+    uint64 no_counters = 13;
     // from is used for unsigned transactions with sender
-    string from = 12;
+    string from = 14;
     // mock_verify_ger is used for slip check when verify smt proof at the time to insert a ger
-    bool mock_verify_ger = 12;
+    bool mock_verify_ger = 15;
     // For testing purposes only
-    map<string, string> db = 13;
-    map<string, string> contracts_bytecode = 14; // For debug/testing purpposes only. Don't fill this on production
-    TraceConfig trace_config = 15;
-    string external_request_id = 16;
+    map<string, string> db = 16;
+    map<string, string> contracts_bytecode = 17; // For debug/testing purpposes only. Don't fill this on production
+    TraceConfig trace_config = 18;
+    string external_request_id = 19;
 }
 
 message SiblingsSmtProofGer {
+    // TODO: add index historicalGER?
     repeated bytes sibglings_smt_proof_ger = 1;
 }
 
@@ -60,12 +61,13 @@ message ProcessBatchResponse {
     uint32 cnt_arithmetics = 9;
     uint32 cnt_binaries = 10;
     uint32 cnt_steps = 11;
-    repeated ProcessBlockResponse block_responses = 13;
-    ExecutorError error = 14;
-    map<string, InfoReadWrite> read_write_addresses = 15;
-    uint64 flush_id = 16;
-    uint64 stored_flush_id = 17;
-    string prover_id = 18;
+    repeated ProcessBlockResponse block_responses = 12;
+    ExecutorError error = 13;
+    map<string, InfoReadWrite> read_write_addresses = 14;
+    uint64 flush_id = 15;
+    uint64 stored_flush_id = 16;
+    string prover_id = 17;
+    uint64 gas_used = 18; // Gas used in the batch
 }
 
 /**
@@ -100,12 +102,8 @@ message TraceConfig {
     uint32 enable_memory = 3;
     // Enables return data (default=false)
     uint32 enable_return_data = 4;
-    // TODO: remove the two options and only generate one of them
-    // Check with node which one is being used
-    // Hash of tx in batch to retrieve the execution trace
-    bytes tx_hash_to_generate_execute_trace = 5;
-    // Hash of tx in batch to retrieve the call trace
-    bytes tx_hash_to_generate_call_trace = 6;
+    // Hash of tx in batch to retrieve the trace
+    bytes tx_hash_to_generate_trace = 5;
 }
 message InfoReadWrite {
     // If nonce="" then it has not been set; if set, string is in decimal (base 10)
@@ -114,7 +112,7 @@ message InfoReadWrite {
     string balance = 2;
 }
 
-message CallTrace {
+message Trace {
     TransactionContext context = 1;
     repeated TransactionStep steps = 2;
 }
@@ -144,6 +142,12 @@ message TransactionContext {
     uint32 execution_time = 11;
     // Starting state root
     bytes old_state_root = 12;
+    // The number of transactions made by the sender prior to this one
+    uint64 nonce = 13;
+    // The integer of the transaction's index position in the block
+    uint64 tx_index = 14;
+    // The chain id of the transaction, if any
+    uint64 chain_id = 15;
 }
 
 message TransactionStep {
@@ -175,6 +179,8 @@ message TransactionStep {
     Contract contract = 13;
     // Error
     RomError error = 14;
+    // Content of the storage
+    map<string, string> storage = 15;
 }
 
 message Contract {
@@ -188,54 +194,59 @@ message Contract {
 }
 
 message ProcessBlockResponse {
-    bytes previous_blockhash = 1; // must match the old_state_root
-    string coinbaseL2 = 1;
-    uint32 blockNumber = 1;
-    uint64 gas_limit = 1;
-    uint64 timestamp = 1;
-    bytes GER = 1;
-    uint64 cumulative_gas_used = 12;
-    bytes block_hash = 12; // must match the new_state_root
+    bytes parent_hash = 1; // The hash of the parent block. Must match the old_state_root
+    bytes receipts_root = 2; // The root of the receipts trie of the block
+    string coinbase = 3;
+    uint32 block_number = 4;
+    // The maximum gas allowed in this block
+    uint64 gas_limit = 5;
+    // The total used gas by all transactions in this block
+    uint64 gas_used = 6;
+    uint64 timestamp = 7;
+    bytes ger = 8;
+    bytes block_hash = 9; // must match the new_state_root
     // TODO: check with node team more fields to add
-    repeated ProcessTransactionResponse responses = 13;
+    repeated ProcessTransactionResponse responses = 10;
+    // Logs emited by LOG opcode
+    repeated Log logs = 11;
 }
 
 message ProcessTransactionResponse {
     // Hash of the transaction
     bytes tx_hash = 1;
     // Hash of the transaction computed by the ROM
-    bytes tx_hash_L2 = 1;
+    bytes tx_hash_L2 = 2;
     // RLP encoded transaction
     // [nonce, gasPrice, gasLimit, to, value, data, v, r, s]
-    bytes rlp_tx = 2;
+    bytes rlp_tx = 3;
+    // The hash of the block where this transaction was in
+    bytes block_hash = 4;
+    // The block number where this transaction was in
+    uint64 block_number = 5;
     // Type indicates legacy transaction
     // It will be always 0 (legacy) in the executor
-    uint32 type = 3;
+    uint32 type = 6;
     // Returned data from the runtime (function result or data supplied with revert opcode)
-    bytes return_value = 4;
+    bytes return_value = 7;
     // Total gas left as result of execution
-    uint64 gas_left = 5;
+    uint64 gas_left = 8;
     // Total gas used as result of execution or gas estimation
-    uint64 gas_used = 6;
-    // Accumulative gas used by this tranaction in the block
-    uint64 gas_used = 6;
+    uint64 gas_used = 9;
+    // Cumulative gas used by this tranaction in the block
+    uint64 cumulative_gas_used = 10;
     // Total gas refunded as result of execution
-    uint64 gas_refunded = 7;
+    uint64 gas_refunded = 11;
     // Any error encountered during the execution
-    RomError error = 8;
+    RomError error = 12;
     // New SC Address in case of SC creation
-    string create_address = 9;
+    string create_address = 13;
     // State Root
-    bytes state_root = 10;
-    // Logs emited by LOG opcode
-    repeated Log logs = 11;
+    bytes state_root = 14;
     // Trace
-    // TODO: not needed. Could be just only one and the the zkevm-node handles which one needs to build
-    repeated ExecutionTraceStep execution_trace = 13;
-    CallTrace call_trace = 14;
+    Trace trace = 15;
     // Efective Gas Price
-    string effective_gas_price = 15;
-    uint32 effective_percentage = 16;
+    string effective_gas_price = 16;
+    uint32 effective_percentage = 17;
 }
 
 message Log {
@@ -250,42 +261,13 @@ message Log {
     // Hash of the transaction
     bytes tx_hash = 5;
     // Hash of the transaction L2 computed by the rom
-    bytes tx_hash_L2 = 5;
+    bytes tx_hash_l2 = 6;
     // Index of the transaction in the block
-    uint32 tx_index = 6;
+    uint32 tx_index = 7;
     // Hash of the block in which the transaction was included
-    bytes block_hash = 7;
+    bytes block_hash = 8;
     // Index of the log in the block
-    uint32 index = 8;
-}
-
-message ExecutionTraceStep {
-    // Program Counter
-    uint64 pc = 1;
-    // OpCode
-    string op = 2;
-    // Remaining gas
-    uint64 remaining_gas = 3;
-    // Gas cost of the operation
-    uint64 gas_cost = 4;
-    // Content of memory, starting at memory_offset, showing only changes vs. previous step
-    bytes memory = 5;
-    // Total size of memory
-    uint32 memory_size = 6;
-    // Offset of memory changes
-    uint32 memory_offset = 7;
-    // Content of the stack
-    repeated string stack = 8;
-    // Returned data
-    bytes return_data = 9;
-    // Content of the storage
-    map<string, string> storage = 10;
-    // Call depth
-    uint32 depth = 11;
-    // Gas refund
-    uint64 gas_refund = 12;
-    // Error
-    RomError error = 13;
+    uint32 index = 9;
 }
 
 enum RomError {
