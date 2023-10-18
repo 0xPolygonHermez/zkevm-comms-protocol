@@ -6,8 +6,6 @@ package executor.v1;
 
 option go_package = "github.com/0xPolygonHermez/zkevm-node/state/runtime/executor";
 
-// TODO: re-check indexes
-
 service ExecutorService {
     /// Processes a batch
     rpc ProcessBatch(ProcessBatchRequest) returns (ProcessBatchResponse) {}
@@ -35,13 +33,14 @@ message ProcessBatchRequest {
     uint64 no_counters = 13;
     // from is used for unsigned transactions with sender
     string from = 14;
-    // mock_verify_ger is used for slip check when verify smt proof at the time to insert a ger
+    // mock_verify_ger is used for skip check when verify smt proof at the time to insert a ger
     bool mock_verify_ger = 15;
     // For testing purposes only
     map<string, string> db = 16;
     map<string, string> contracts_bytecode = 17; // For debug/testing purpposes only. Don't fill this on production
     TraceConfig trace_config = 18;
     string external_request_id = 19;
+    // TODO: provide array of GERS inserted
 }
 
 message SiblingsSmtProofGer {
@@ -203,8 +202,11 @@ message ProcessBlockResponse {
     // The total used gas by all transactions in this block
     uint64 gas_used = 6;
     uint64 timestamp = 7;
+    // global exoit root l1InfoTree
     bytes ger = 8;
-    bytes block_hash = 9; // must match the new_state_root
+    // BlockHashL1 l1InfoTree
+    bytes ger = 8;
+    bytes block_hash_l1 = 9; // must match the new_state_root
     // TODO: check with node team more fields to add
     repeated ProcessTransactionResponse responses = 10;
     // Logs emited by LOG opcode
