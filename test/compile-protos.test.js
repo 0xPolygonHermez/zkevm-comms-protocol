@@ -21,7 +21,7 @@ describe('Compile All protos', () => {
     });
 
     it('compile executor', async () => {
-        const PROTO_PATH = `${__dirname}/../proto/executor/v1/executor.proto`;
+        const PROTO_PATH = `${__dirname}/../proto/executor/v1/executor_main.proto`;
 
         const packageDefinition = protoLoader.loadSync(
             PROTO_PATH,
