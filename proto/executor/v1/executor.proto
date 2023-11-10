@@ -71,6 +71,7 @@ message ProcessBatchResponse {
     uint64 gas_used = 18;
     repeated bytes nodes_keys = 19;
     repeated bytes program_keys = 20;
+    uint64 fork_id = 21;
 }
 
 /**
