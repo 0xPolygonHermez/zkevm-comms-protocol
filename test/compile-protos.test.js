@@ -1,5 +1,6 @@
 const protoLoader = require('@grpc/proto-loader');
 const grpc = require('@grpc/grpc-js');
+const path = require('path');
 
 describe('Compile All protos', () => {
     it('compile aggregator', async () => {
@@ -21,7 +22,7 @@ describe('Compile All protos', () => {
     });
 
     it('compile executor', async () => {
-        const PROTO_PATH = `${__dirname}/../proto/executor/v1/executor_main.proto`;
+        const PROTO_PATH = `${__dirname}/../proto/executor/v1/executor.proto`;
 
         const packageDefinition = protoLoader.loadSync(
             PROTO_PATH,
