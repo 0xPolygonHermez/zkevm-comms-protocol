@@ -32,10 +32,11 @@ message ProcessBatchRequest {
     map<string, string> contracts_bytecode = 14; // For debug/testing purpposes only. Don't fill this on production
     TraceConfig trace_config = 15;
     string external_request_id = 16;
+    uint32 get_keys = 17; // if 1, the keys used to read or write storage values will be returned
     // The state override set is an optional address-to-state mapping,
     // where each entry specifies some state to be ephemerally overridden
     // prior to executing the call.
-    map<string, OverrideAccount> state_override = 17;
+    map<string, OverrideAccount> state_override = 18;
 }
 
 message ProcessBatchResponse {
@@ -57,6 +58,8 @@ message ProcessBatchResponse {
     uint64 flush_id = 16;
     uint64 stored_flush_id = 17;
     string prover_id = 18;
+    repeated bytes nodes_keys = 19;
+    repeated bytes program_keys = 20;
 }
 
 /**
@@ -91,10 +94,8 @@ message TraceConfig {
     uint32 enable_memory = 3;
     // Enables return data (default=false)
     uint32 enable_return_data = 4;
-    // Hash of tx in batch to retrieve the execution trace
-    bytes tx_hash_to_generate_execute_trace = 5;
-    // Hash of tx in batch to retrieve the call trace
-    bytes tx_hash_to_generate_call_trace = 6;
+    // Hash of tx in batch to retrieve the trace
+    bytes tx_hash_to_generate_full_trace = 5;
 }
 
 // OverrideAccount indicates the overriding fields of account during the execution
@@ -123,7 +124,7 @@ message InfoReadWrite {
     string balance = 2;
 }
 
-message CallTrace {
+message FullTrace {
     TransactionContext context = 1;
     repeated TransactionStep steps = 2;
 }
@@ -184,6 +185,8 @@ message TransactionStep {
     Contract contract = 13;
     // Error
     RomError error = 14;
+    // Content of the storage
+    map<string, string> storage = 15;
 }
 
 message Contract {
@@ -221,12 +224,14 @@ message ProcessTransactionResponse {
     bytes state_root = 10;
     // Logs emited by LOG opcode
     repeated Log logs = 11;
-    // Trace
-    repeated ExecutionTraceStep execution_trace = 13;
-    CallTrace call_trace = 14;
+    FullTrace full_trace = 14;
     // Efective Gas Price
     string effective_gas_price = 15;
     uint32 effective_percentage = 16;
+    // Flag to indicate if opcode 'GASPRICE' has been called
+    uint32 has_gasprice_opcode = 17;
+    // Flag to indicate if opcode 'BALANCE' has been called
+    uint32 has_balance_opcode = 18;
 }
 
 message Log {
@@ -246,35 +251,6 @@ message Log {
     bytes batch_hash = 7;
     // Index of the log in the block
     uint32 index = 8;
-}
-
-message ExecutionTraceStep {
-    // Program Counter
-    uint64 pc = 1;
-    // OpCode
-    string op = 2;
-    // Remaining gas
-    uint64 remaining_gas = 3;
-    // Gas cost of the operation
-    uint64 gas_cost = 4;
-    // Content of memory, starting at memory_offset, showing only changes vs. previous step
-    bytes memory = 5;
-    // Total size of memory
-    uint32 memory_size = 6;
-    // Offset of memory changes
-    uint32 memory_offset = 7;
-    // Content of the stack
-    repeated string stack = 8;
-    // Returned data
-    bytes return_data = 9;
-    // Content of the storage
-    map<string, string> storage = 10;
-    // Call depth
-    uint32 depth = 11;
-    // Gas refund
-    uint64 gas_refund = 12;
-    // Error
-    RomError error = 13;
 }
 
 enum RomError {
@@ -499,4 +475,6 @@ enum ExecutorError {
     EXECUTOR_ERROR_INVALID_CONTRACTS_BYTECODE_KEY = 78;
     // EXECUTOR_ERROR_INVALID_CONTRACTS_BYTECODE_VALUE indicates that the input parameter contracts_bytecode value is invalid
     EXECUTOR_ERROR_INVALID_CONTRACTS_BYTECODE_VALUE = 79;
+    // EXECUTOR_ERROR_INVALID_GET_KEY indicates that the input parameter get key is invalid, e.g. is true but fork_id<5
+    EXECUTOR_ERROR_INVALID_GET_KEY = 80;
 }
