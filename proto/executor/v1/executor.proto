@@ -32,12 +32,11 @@ message ProcessBatchRequest {
     map<string, string> db = 13;
     map<string, string> contracts_bytecode = 14; // For debug/testing purpposes only. Don't fill this on production
     TraceConfig trace_config = 15;
-    string external_request_id = 16;
-    uint32 get_keys = 17; // if 1, the keys used to read or write storage values will be returned
+    string context_id = 16;
     // The state override set is an optional address-to-state mapping,
     // where each entry specifies some state to be ephemerally overridden
     // prior to executing the call.
-    map<string, OverrideAccount> state_override = 18;
+    map<string, OverrideAccount> state_override = 17;
 }
 
 message ProcessBatchResponse {
@@ -59,9 +58,7 @@ message ProcessBatchResponse {
     uint64 flush_id = 16;
     uint64 stored_flush_id = 17;
     string prover_id = 18;
-    repeated bytes nodes_keys = 19;
-    repeated bytes program_keys = 20;
-    uint64 fork_id = 21;
+    uint64 fork_id = 19;
 }
 
 /**
