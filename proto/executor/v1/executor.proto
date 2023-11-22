@@ -317,7 +317,7 @@ message ProcessBatchResponseV2 {
     uint64 stored_flush_id = 16;
     string prover_id = 17;
     uint64 gas_used = 18;
-    repeated bytes node_keys = 19;
+    repeated bytes smt_keys = 19;
     repeated bytes program_keys = 20;
     uint64 fork_id = 21;
 }
