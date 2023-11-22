@@ -317,7 +317,7 @@ message ProcessBatchResponseV2 {
     uint64 stored_flush_id = 16;
     string prover_id = 17;
     uint64 gas_used = 18;
-    repeated bytes nodes_keys = 19;
+    repeated bytes node_keys = 19;
     repeated bytes program_keys = 20;
     uint64 fork_id = 21;
 }
@@ -450,7 +450,7 @@ message ProcessBlockResponseV2 {
     // The maximum gas allowed in this block
     uint64 gas_limit = 3;
     // block number
-    uint32 block_number = 4;
+    uint64 block_number = 4;
     // timestamp used in the block
     uint64 timestamp = 5;
     // global exit root l1InfoTree
