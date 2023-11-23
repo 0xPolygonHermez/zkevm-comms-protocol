@@ -111,9 +111,9 @@ message OverrideAccount {
     // Fake EVM bytecode to inject into the account before executing the call.
     bytes code = 3;
     // Fake key-value mapping to override all slots in the account storage before executing the call.
-    map<string, bytes> state = 4;
+    map<string, string> state = 4;
     // Fake key-value mapping to override individual slots in the account storage before executing the call.
-    map<string, bytes> state_diff = 5;
+    map<string, string> state_diff = 5;
 }
 
 message InfoReadWrite {
@@ -310,16 +310,17 @@ message ProcessBatchResponseV2 {
     uint32 cnt_arithmetics = 9;
     uint32 cnt_binaries = 10;
     uint32 cnt_steps = 11;
-    repeated ProcessBlockResponseV2 block_responses = 12;
-    ExecutorError error = 13;
-    map<string, InfoReadWriteV2> read_write_addresses = 14;
-    uint64 flush_id = 15;
-    uint64 stored_flush_id = 16;
-    string prover_id = 17;
-    uint64 gas_used = 18;
-    repeated bytes nodes_keys = 19;
-    repeated bytes program_keys = 20;
-    uint64 fork_id = 21;
+    uint32 cnt_sha256_hashes = 12;
+    repeated ProcessBlockResponseV2 block_responses = 13;
+    ExecutorError error = 14;
+    map<string, InfoReadWriteV2> read_write_addresses = 15;
+    uint64 flush_id = 16;
+    uint64 stored_flush_id = 17;
+    string prover_id = 18;
+    uint64 gas_used = 19;
+    repeated bytes smt_keys = 20;
+    repeated bytes program_keys = 21;
+    uint64 fork_id = 22;
 }
 
 // Trace configuration request params
@@ -350,9 +351,9 @@ message OverrideAccountV2 {
     // Fake EVM bytecode to inject into the account before executing the call.
     bytes code = 3;
     // Fake key-value mapping to override all slots in the account storage before executing the call.
-    map<string, bytes> state = 4;
+    map<string, string> state = 4;
     // Fake key-value mapping to override individual slots in the account storage before executing the call.
-    map<string, bytes> state_diff = 5;
+    map<string, string> state_diff = 5;
 }
 
 message InfoReadWriteV2 {
@@ -450,7 +451,7 @@ message ProcessBlockResponseV2 {
     // The maximum gas allowed in this block
     uint64 gas_limit = 3;
     // block number
-    uint32 block_number = 4;
+    uint64 block_number = 4;
     // timestamp used in the block
     uint64 timestamp = 5;
     // global exit root l1InfoTree
@@ -605,6 +606,8 @@ enum RomError {
     ROM_ERROR_INVALID_DECODE_CHANGE_L2_BLOCK = 31;
     // ROM_ERROR_INVALID_NOT_FIRST_TX_CHANGE_L2_BLOCK indicates that the first transaction in a batch is not a change l2 block transaction
     ROM_ERROR_INVALID_NOT_FIRST_TX_CHANGE_L2_BLOCK = 32;
+    // ROM_ERROR_INVALID_TX_CHANGE_L2_BLOCK indicates that the change l2 block transaction has trigger an error during while executing
+    ROM_ERROR_INVALID_TX_CHANGE_L2_BLOCK = 33;
 }
 
 enum ExecutorError {
@@ -802,4 +805,16 @@ enum ExecutorError {
     EXECUTOR_ERROR_SM_MAIN_HASHSDIGEST_CALLED_TWICE = 95;
     // EXECUTOR_ERROR_SM_MAIN_HASHS_READ_OUT_OF_RANGE indicates that the main execution SHA-256 check found read out of range
     EXECUTOR_ERROR_SM_MAIN_HASHS_READ_OUT_OF_RANGE = 96;
+    // EXECUTOR_ERROR_INVALID_L1_INFO_ROOT indicates that the input parameter L1 info root value is invalid
+    EXECUTOR_ERROR_INVALID_L1_INFO_ROOT = 97;
+    // EXECUTOR_ERROR_INVALID_FORCED_BLOCKHASH_L1 indicates that the input parameter forced blockhash L1 value is invalid
+    EXECUTOR_ERROR_INVALID_FORCED_BLOCKHASH_L1 = 98;
+    // EXECUTOR_ERROR_INVALID_L1_DATA_V2_GLOBAL_EXIT_ROOT indicates that the input parameter L1 data V2 global exit root value is invalid
+    EXECUTOR_ERROR_INVALID_L1_DATA_V2_GLOBAL_EXIT_ROOT = 99;
+    // EXECUTOR_ERROR_INVALID_L1_DATA_V2_BLOCK_HASH_L1 indicates that the input parameter L1 data V2 block hash L1 value is invalid
+    EXECUTOR_ERROR_INVALID_L1_DATA_V2_BLOCK_HASH_L1 = 100;
+    // EXECUTOR_ERROR_INVALID_L1_SMT_PROOF indicates that the input parameter L1 data V2 SMT proof value is invalid
+    EXECUTOR_ERROR_INVALID_L1_SMT_PROOF = 101;
+    // EXECUTOR_ERROR_INVALID_BALANCE indicates that the input parameter balance value is invalid
+    EXECUTOR_ERROR_INVALID_BALANCE = 102;
 }
