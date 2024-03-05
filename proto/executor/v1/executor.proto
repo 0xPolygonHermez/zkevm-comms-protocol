@@ -10,6 +10,8 @@ service ExecutorService {
     /// Processes a batch
     rpc ProcessBatch(ProcessBatchRequest) returns (ProcessBatchResponse) {}
     rpc ProcessBatchV2(ProcessBatchRequestV2) returns (ProcessBatchResponseV2) {}
+    rpc ProcessBatchV3(ProcessBatchRequestV3) returns (ProcessBatchResponseV3) {}
+    rpc ProcessBlobInnerV3(ProcessBlobInnerRequestV3) returns (ProcessBlobInnerResponseV3) {}
     rpc ProcessStatelessBatchV2(ProcessStatelessBatchRequestV2) returns (ProcessBatchResponseV2) {}
     rpc GetFlushStatus (google.protobuf.Empty) returns (GetFlushStatusResponse) {}
 }
@@ -321,7 +323,7 @@ message L1DataV2 {
 
 message DebugV2 {
     uint64 gas_limit = 1;
-    bytes new_state_root = 2; 
+    bytes new_state_root = 2;
     bytes new_acc_input_hash = 3;
     bytes new_local_exit_root = 4;
     uint64 new_batch_num = 5;
@@ -890,4 +892,130 @@ enum ExecutorError {
     EXECUTOR_ERROR_INVALID_DATA_STREAM = 115;
     // EXECUTOR_ERROR_INVALID_UPDATE_MERKLE_TREE indicates that the provided update merkle tree is invalid, e.g. because the executor is configured not to write to database
     EXECUTOR_ERROR_INVALID_UPDATE_MERKLE_TREE = 116;
+}
+
+////////////////////////////////////////////////
+////////////  START V3 SECTION  ////////////////
+////////////////////////////////////////////////
+
+message ProcessBatchRequestV3 {
+    bytes old_state_root = 1;
+    bytes old_acc_input_hash = 2;
+    bytes previous_l1_info_tree_root = 5;
+    uint32 previous_l1_info_tree_index = 5;
+    uint64 chain_id = 4;
+    uint64 fork_id = 5;
+    bytes batch_l2_data = 6;
+    uint8 type = 1;
+    bytes forced_hash_data = 1;
+    ForcedData forced_data = 20;
+    string coinbase = 9;
+    uint32 update_merkle_tree = 11;
+    // flag to indicate that counters should not be taken into account
+    uint32 no_counters = 12;
+    // from is used for unsigned transactions with sender
+    string from = 13;
+    // flag to skip the restriction to start a batch with a changeL2Block transaction
+    uint32 skip_first_change_l2_block = 15;
+    // flag to skip writing the block info root in the state
+    uint32 skip_write_block_info_root = 16;
+    // lInfoTree information
+    map<uint32, L1DataV3> l1_info_tree_data = 17;
+    // For testing purposes only
+    map<string, string> db = 18;
+    map<string, string> contracts_bytecode = 19; // For debug/testing purpposes only. Don't fill this on production
+    TraceConfigV2 trace_config = 20;
+    string context_id = 21;
+    uint32 get_keys = 22; // if 1, the keys used to read or write storage values will be returned
+    // The state override set is an optional address-to-state mapping,
+    // where each entry specifies some state to be ephemerally overridden
+    // prior to executing the call.
+    map<string, OverrideAccountV2> state_override = 23;
+    DebugV2 debug = 24;
+}
+
+message L1DataV3 {
+    bytes global_exit_root = 1;
+    bytes block_hash_l1 = 2;
+    uint64 min_timestamp = 3;
+    repeated bytes smt_proof = 4;
+    bytes initial_historic_root = 4;
+}
+
+message ProcessBatchResponseV3 {
+    bytes new_state_root = 1;
+    bytes new_acc_input_hash = 2;
+    bytes new_local_exit_root = 3;
+    // uint64 new_batch_num = 4; // not needed anymore // COMMENT:
+    // last timestamp of the last block in the batch // COMMENT:
+    bytes new_last_timestamp = 4;
+    // two new outputs: current_l1_info_tree_root & current_l1_info__tree_index // COMMENT:
+    bytes current_l1_info_tree_root = 5;
+    uint32 current_l1_info_tree_index = 5;
+    uint32 cnt_keccak_hashes = 5;
+    uint32 cnt_poseidon_hashes = 6;
+    uint32 cnt_poseidon_paddings = 7;
+    uint32 cnt_mem_aligns = 8;
+    uint32 cnt_arithmetics = 9;
+    uint32 cnt_binaries = 10;
+    uint32 cnt_steps = 11;
+    uint32 cnt_sha256_hashes = 12;
+    repeated ProcessBlockResponseV2 block_responses = 13;
+    ExecutorError error = 14;
+    map<string, InfoReadWriteV2> read_write_addresses = 15;
+    uint64 flush_id = 16;
+    uint64 stored_flush_id = 17;
+    string prover_id = 18;
+    uint64 gas_used = 19;
+    repeated bytes smt_keys = 20;
+    repeated bytes program_keys = 21;
+    uint64 fork_id = 22;
+    uint32 invalid_batch = 23;
+    RomError error_rom = 24;
+    uint32 cnt_reserve_keccak_hashes = 25;
+    uint32 cnt_reserve_poseidon_hashes = 26;
+    uint32 cnt_reserve_poseidon_paddings = 27;
+    uint32 cnt_reserve_mem_aligns = 28;
+    uint32 cnt_reserve_arithmetics = 29;
+    uint32 cnt_reserve_binaries = 30;
+    uint32 cnt_reserve_steps = 31;
+    uint32 cnt_reserve_sha256_hashes = 32;
+}
+
+message ForcedData {
+    bytes global_exit_root = 1;
+    bytes block_hash_l1 = 2;
+    uint64 min_timestamp = 3;
+}
+
+message ProcessBlobInnerRequestV3 {
+    // inputs
+    bytes old_blob_state_root = 1;
+    bytes old_blob_acc_input_hash = 2;
+    uint64 old_num_blob = 5;
+    bytes old_state_root = 1;
+    uint64 fork_id = 3;
+    // belong to blobAccInputHash
+    uint32 last_l1_info_tree_index = 2;
+    bytes last_l1_info_tree_root = 2;
+    uint64 last_timestamp = 2;
+    string coinbase = 2;
+    bytes zk_gas_limit = 2;
+    uint8 type = 2;
+    bytes point_z = 3;
+    bytes point_y = 4;
+    bytes blob_data = 4;
+    bytes forced_hash_data = 4;
+}
+
+message ProcessBlobInnerResponseV3 {
+    // outputs
+    bytes new_blob_state_root = 1;
+    bytes new_blob_acc_input_hash = 1;
+    uint64 new_num_blob = 2;
+    bytes final_acc_batch_hash_data = 3;
+    bytes local_exit_root_from_blob = 5;
+    uint8 is_invalid = 3;
+    // extra
+    repeated bytes batch_data = 13;
 }
