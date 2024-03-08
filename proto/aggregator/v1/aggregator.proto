@@ -318,13 +318,12 @@ message FinalProof {
 /*
  * @dev PublicInputs
 * @param {old_state_root} - old state root
-* @param {old_acc_input_hash} - old accumulate input hash
+* @param {old_batch_acc_input_hash} - old accumulate input hash
 * @param {previous_l1_info_tree_root} - previous l1 info tree root
 * @param {previous_l1_info_tree_index} - previous l1 info tree index
 * @param {chain_id} - chain id
 * @param {fork_id} - fork id
 * @param {batch_l2_data} - batch l2 data
-* @param {l1_info_root} - l1 info root
 * @param {sequencer_addr} - sequencer address
 * @param {type} - type
 * @param {forced_hash_data} - forced hash data
@@ -334,19 +333,18 @@ message FinalProof {
 */
 message PublicInputs {
     bytes old_state_root = 1;
-    bytes old_acc_input_hash = 2;
+    bytes old_batch_acc_input_hash = 2;
     bytes previous_l1_info_tree_root = 3;
-    uint32 previous_l1_info_tree_index  = 4;  
+    uint32 previous_l1_info_tree_index  = 4;
     uint64 chain_id = 5;
     uint64 fork_id = 6;
     bytes batch_l2_data = 7;
-    bytes l1_info_root = 8;
-    string sequencer_addr = 9;
-    uint32 type = 10;
-    bytes forced_hash_data = 11;
-    ForcedData forced_data = 12;
-    string aggregator_addr = 13;
-    map<uint32, L1Data> l1_info_tree_data = 14;
+    string sequencer_addr = 8;
+    uint32 type = 9;
+    bytes forced_hash_data = 10;
+    ForcedData forced_data = 11;
+    string aggregator_addr = 12;
+    map<uint32, L1Data> l1_info_tree_data = 13;
 }
 
 /**
@@ -370,7 +368,7 @@ message ForcedData {
 * @param {last_l1_info_tree_index} - last l1 info tree index
 * @param {last_l1_info_tree_root} - last l1 info tree root
 * @param {sequencer_addr} - sequencer address
-* @param {last_timestamp} - last timestamp
+* @param {timestamp_limit} - timestamp limit
 * @param {zk_gas_limit} - zk gas limit
 * @param {type} - type
 * @param {point_z} - point z
@@ -387,7 +385,7 @@ message PublicBlobInnerInputs {
     uint32 last_l1_info_tree_index = 6;
     bytes last_l1_info_tree_root = 7;
     string sequencer_addr = 8;
-    uint64 last_timestamp = 9;
+    uint64 timestamp_limit = 9;
     bytes zk_gas_limit = 10;
     uint32 type = 11;
     bytes point_z = 12;
@@ -420,7 +418,7 @@ message StatelessPublicInputs {
     map<uint32, L1Data> l1_info_tree_data = 9;
 }
 
-/** 
+/**
 * @dev: l1InfoTree leaf values
 * @param {global_exit_root} - global exit root
 * @param {blockhash_l1} - blockhash l1
@@ -468,14 +466,16 @@ message StatelessInputProver {
  * @dev PublicInputsExtended
  * @param {public_inputs} - public inputs
  * @param {new_state_root} - final state root. Used as a sanity check.
- * @param {new_acc_input_hash} - final accumulate input hash. Used as a sanity check.
+ * @param {new_batch_acc_input_hash} - final accumulate input hash. Used as a sanity check.
  * @param {new_local_exit_root} - new local exit root. Used as a sanity check.
- * @param {new_batch_num} - final num batch. Used as a sanity check.
+ * @param {new_last_timestamp} - timeatamp of the last block. Used as a sanity check.
  */
 message PublicInputsExtended {
     PublicInputs public_inputs = 1;
     bytes new_state_root = 2;
-    bytes new_acc_input_hash = 3;
+    bytes new_batch_acc_input_hash = 3;
     bytes new_local_exit_root = 4;
-    uint64 new_batch_num = 5;
+    uint64 new_last_timestamp = 5;
+    bytes current_l1_info_tree_root = 6;
+    uint32 current_l1_info_tree_index = 7;
 }
