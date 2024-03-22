@@ -467,7 +467,6 @@ message StatelessInputProver {
  * @param {public_inputs} - public inputs
  * @param {new_state_root} - final state root. Used as a sanity check.
  * @param {new_batch_acc_input_hash} - final accumulate input hash. Used as a sanity check.
- * @param {new_local_exit_root} - new local exit root. Used as a sanity check.
  * @param {new_last_timestamp} - timestamp of the last block. Used as a sanity check.
  */
 message PublicInputsExtended {
