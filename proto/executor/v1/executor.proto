@@ -1068,7 +1068,7 @@ message ProcessBlobInnerResponseV3 {
 enum RomBlobError {
     ROM_BLOB_ERROR_UNSPECIFIED = 0;
     // ROM_ERROR_NO_ERROR indicates the execution ended successfully
-    ROM_BLOB__NO_ERROR = 1;
+    ROM_BLOB_ERROR_NO_ERROR = 1;
     // ROM_BLOB_ERROR_INVALID_PARSING indicates that has been an error while parsing the blob data
     ROM_BLOB_ERROR_INVALID_PARSING = 2;
     // ROM_BLOB_ERROR_INVALID_MSB_BYTE indicates that the MSB on one field element is different than zero (only for blob_type = 1)
@@ -1078,5 +1078,5 @@ enum RomBlobError {
     // ROM_BLOB_ERROR_INVALID_BLOB_TYPE blob_type not supported
     ROM_BLOB_ERROR_INVALID_BLOB_TYPE = 5;
     // ROM_BLOB_ERROR_INVALID_COMPRESSION_TYPE compression type not supported
-    ROM_BLOB_ERROR_INVALID_COMPRESSION_TYPE = 5;
+    ROM_BLOB_ERROR_INVALID_COMPRESSION_TYPE = 6;
 }
