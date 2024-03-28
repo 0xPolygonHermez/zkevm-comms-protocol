@@ -421,14 +421,14 @@ message StatelessPublicInputs {
 * @param {global_exit_root} - global exit root
 * @param {blockhash_l1} - blockhash l1
 * @param {min_timestamp} - min timestamp
-* @param {smt_proof} - smt proof
+* @param {smt_proof_previous_index} - smt proof previous index
 * @param {initial_historic_root} - initial historic root
 */
 message L1Data {
     bytes global_exit_root = 1;
     bytes block_hash_l1 = 2;
     uint32 min_timestamp = 3;
-    repeated bytes smt_proof = 4;
+    repeated bytes smt_proof_previous_index = 4;
     bytes initial_historic_root = 5;
 }
 
