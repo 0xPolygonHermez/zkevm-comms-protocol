@@ -975,7 +975,7 @@ message L1DataV3 {
     bytes global_exit_root = 1;
     bytes block_hash_l1 = 2;
     uint64 min_timestamp = 3;
-    repeated bytes smt_proof = 4;
+    repeated bytes smt_proof_previous_index = 4;
     bytes initial_historic_root = 5;
 }
 
