@@ -1083,4 +1083,6 @@ enum RomBlobError {
     ROM_BLOB_ERROR_INVALID_COMPRESSION_TYPE = 6;
     // ROM_BLOB_ERROR_INVALID_FORCED_BATCHES blobtype = 2 and numBatches > 1
     ROM_BLOB_ERROR_INVALID_FORCED_BATCHES = 7;
+    // ROM_BLOB_ERROR_INVALID_TOTALBODY_LEN totalBodyLen != blobDataLen - 1 (byte compression) - 4 (bytes totalBodyLen)
+    ROM_BLOB_ERROR_INVALID_TOTALBODY_LEN= 8;
 }
