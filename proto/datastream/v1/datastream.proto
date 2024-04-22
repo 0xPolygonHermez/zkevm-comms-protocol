@@ -24,7 +24,7 @@ message L2Block {
     bytes hash = 6;
     bytes state_root = 7;
     bytes global_exit_root = 8;
-    repeated Transaction Transactions = 9;
+    repeated Transaction transactions = 9;
 }
 
 message Transaction {
@@ -46,11 +46,11 @@ message UpdateGER {
 }
 
 message BookMark {
-    BookMarkType type = 1;
+    BookmarkType type = 1;
     uint64 value = 2;
 }
 
-enum BookMarkType {
-    BATCH = 0;
-    L2_BLOCK = 1;
+enum BookmarkType {
+    BOOKMARK_TYPE_BATCH = 0;
+    BOOKMARK_TYPE_L2_BLOCK = 1;
 }
