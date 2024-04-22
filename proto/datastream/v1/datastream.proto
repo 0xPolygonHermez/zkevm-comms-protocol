@@ -25,7 +25,7 @@ message L2Block {
 }
 
 message Transaction {
-    uint32 is_valid = 1;
+    bool is_valid = 1;
     uint64 nonce = 2;
     bytes data = 3;
     uint32 effective_gas_price_percentage = 4;
