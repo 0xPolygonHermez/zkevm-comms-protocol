@@ -51,6 +51,7 @@ message BookMark {
 }
 
 enum BookmarkType {
-    BOOKMARK_TYPE_BATCH = 0;
-    BOOKMARK_TYPE_L2_BLOCK = 1;
+    BOOKMARK_TYPE_UNSPECIFIED = 0;
+    BOOKMARK_TYPE_BATCH = 1;
+    BOOKMARK_TYPE_L2_BLOCK = 2;
 }
