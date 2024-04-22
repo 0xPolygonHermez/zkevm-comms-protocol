@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package datastream.v1;
+
+option go_package = "github.com/0xPolygonHermez/zkevm-node/state/datastream";
+
+message Batch {
+    uint64 number = 1;
+    bytes local_exit_root = 2;
+    bytes state_root = 3;
+    bytes coinbase = 4;
+    uint64 fork_id = 5;
+    uint64 chain_id = 6;
+    bytes witness = 7;
+    repeated L2Block l2_blocks = 8;
+}
+
+message L2Block {
+    uint64 number = 1;
+    uint32 delta_timestamp = 2;
+    uint64 min_timestamp = 3;
+    bytes l1_blockhash = 4;
+    uint32 l1_infotree_index = 5;
+    bytes hash = 6;
+    bytes state_root = 7;
+    bytes global_exit_root = 8;
+    repeated Transaction Transactions = 9;
+}
+
+message Transaction {
+    uint32 is_valid = 1;
+    uint64 nonce = 2;
+    bytes data = 3;
+    uint32 effective_gas_price_percentage = 4;
+    bytes im_state_root = 5;
+}
+
+message UpdateGER {
+    uint64 batch_number = 1;
+    uint64 timestamp = 2;
+    bytes global_exit_root = 3;
+    bytes coinbase = 4;
+    uint64 fork_id = 5;
+    uint64 chain_id = 6;
+    bytes state_root = 7;
+}
+
+message BookMark {
+    BookMarkType type = 1;
+    uint64 value = 2;
+}
+
+enum BookMarkType {
+    BATCH = 0;
+    L2_BLOCK = 1;
+}
