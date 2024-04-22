@@ -11,7 +11,6 @@ message Batch {
     bytes coinbase = 4;
     uint64 fork_id = 5;
     uint64 chain_id = 6;
-    repeated L2Block l2_blocks = 7;
 }
 
 message L2Block {
@@ -23,7 +22,6 @@ message L2Block {
     bytes hash = 6;
     bytes state_root = 7;
     bytes global_exit_root = 8;
-    repeated Transaction transactions = 9;
 }
 
 message Transaction {
