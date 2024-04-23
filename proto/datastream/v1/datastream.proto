@@ -29,10 +29,9 @@ message L2Block {
 message Transaction {
     uint64 l2block_number = 1;
     bool is_valid = 2;
-    uint64 nonce = 3;
-    bytes data = 4;
-    uint32 effective_gas_price_percentage = 5;
-    bytes im_state_root = 6;
+    bytes data = 3;
+    uint32 effective_gas_price_percentage = 4;
+    bytes im_state_root = 5;
 }
 
 message UpdateGER {
