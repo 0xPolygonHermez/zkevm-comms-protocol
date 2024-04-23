@@ -15,21 +15,23 @@ message Batch {
 
 message L2Block {
     uint64 number = 1;
-    uint32 delta_timestamp = 2;
-    uint64 min_timestamp = 3;
-    bytes l1_blockhash = 4;
-    uint32 l1_infotree_index = 5;
-    bytes hash = 6;
-    bytes state_root = 7;
-    bytes global_exit_root = 8;
+    uint64 batch_number = 2;
+    uint32 delta_timestamp = 3;
+    uint64 min_timestamp = 4;
+    bytes l1_blockhash = 5;
+    uint32 l1_infotree_index = 6;
+    bytes hash = 7;
+    bytes state_root = 8;
+    bytes global_exit_root = 9;
 }
 
 message Transaction {
-    bool is_valid = 1;
-    uint64 nonce = 2;
-    bytes data = 3;
-    uint32 effective_gas_price_percentage = 4;
-    bytes im_state_root = 5;
+    uint64 l2block_number = 1;
+    bool is_valid = 2;
+    uint64 nonce = 3;
+    bytes data = 4;
+    uint32 effective_gas_price_percentage = 5;
+    bytes im_state_root = 6;
 }
 
 message UpdateGER {
