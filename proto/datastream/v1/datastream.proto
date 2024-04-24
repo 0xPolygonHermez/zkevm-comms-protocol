@@ -15,9 +15,9 @@ message Batch {
 message L2Block {
     uint64 number = 1;
     uint64 batch_number = 2;
-    int64 timestamp = 3;
+    uint64 timestamp = 3;
     uint32 delta_timestamp = 4;
-    int64 min_timestamp = 5;
+    uint64 min_timestamp = 5;
     bytes l1_blockhash = 6;
     uint32 l1_infotree_index = 7;
     bytes hash = 8;
