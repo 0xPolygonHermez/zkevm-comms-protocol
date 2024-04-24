@@ -8,22 +8,22 @@ message Batch {
     uint64 number = 1;
     bytes local_exit_root = 2;
     bytes state_root = 3;
-    bytes coinbase = 4;
-    uint64 fork_id = 5;
-    uint64 chain_id = 6;
+    uint64 fork_id = 4;
+    uint64 chain_id = 5;
 }
 
 message L2Block {
     uint64 number = 1;
     uint64 batch_number = 2;
-    uint64 timestamp = 3;
+    int64 timestamp = 3;
     uint32 delta_timestamp = 4;
-    uint64 min_timestamp = 5;
+    int64 min_timestamp = 5;
     bytes l1_blockhash = 6;
     uint32 l1_infotree_index = 7;
     bytes hash = 8;
     bytes state_root = 9;
     bytes global_exit_root = 10;
+    bytes coinbase = 11;
 }
 
 message Transaction {
