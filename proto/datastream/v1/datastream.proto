@@ -29,7 +29,7 @@ message L2Block {
 message Transaction {
     uint64 l2block_number = 1;
     bool is_valid = 2;
-    bytes data = 3;
+    bytes encoded = 3;
     uint32 effective_gas_price_percentage = 4;
     bytes im_state_root = 5;
 }
