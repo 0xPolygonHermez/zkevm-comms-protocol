@@ -6,7 +6,7 @@ option go_package = "github.com/0xPolygonHermez/zkevm-node/state/datastream";
 
 message BatchStart {
     uint64 number = 1;
-    type BatchType = 2;
+    BatchType type = 2;
     uint64 fork_id = 3;
     uint64 chain_id = 4;
     Debug debug = 5;
